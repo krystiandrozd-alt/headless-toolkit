@@ -2,6 +2,10 @@
 
 Source: [`llms-headless-experience-layer.txt`](https://developer.salesforce.com/docs/llms-headless-experience-layer.txt).
 
+## Related official site: HXL Playground
+
+[headlessexperiencelayer.com](https://www.headlessexperiencelayer.com/) — Salesforce-owned (confirmed: page title "HXL Playground | Salesforce"). Tagline: "Build once, run anywhere — define your interface once as a widget, render it natively in Slack, ChatGPT, Claude, Agentforce, or any MCP host." Has three sections: Build, Learn, Browse. It also distributes a downloadable **AI toolkit ZIP** for building HXL widgets with an AI assistant — component schemas, widget examples, and widget authoring guidance, meant to be unzipped with `SKILL.md` as the entry point. This is the upstream source of the locally-installed `hxl-widget-authoring` Claude Code skill (its `SKILL.md` carries the same "re-download the ZIP periodically to stay up to date" language).
+
 ## Guide
 
 | Page | URL |

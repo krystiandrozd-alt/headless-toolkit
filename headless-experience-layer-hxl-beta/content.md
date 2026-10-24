@@ -32,6 +32,10 @@ Both "MCP result wrapper" and "MCP payload" are just role names for ordinary obj
 
 HXL is explicitly a **Beta** developer guide as of the capture date — treat the widget/metadata contract as subject to change, and check the [Release Notes](https://developer.salesforce.com/docs/platform/hxl/guide/hxl-release-notes.md) page before building against it.
 
+## Practical tooling: the HXL Playground site and AI toolkit
+
+Beyond the docs guide, Salesforce runs a dedicated site, [headlessexperiencelayer.com](https://www.headlessexperiencelayer.com/) ("HXL Playground"), confirmed official (page title "HXL Playground | Salesforce"). It distributes a downloadable ZIP — component schemas, widget examples, and widget authoring guidance for building HXL widgets with an AI assistant, entry point `SKILL.md` — which is the upstream source of the `hxl-widget-authoring` Claude Code skill already installed locally in this environment (same "re-download the ZIP periodically" language appears in both). See [`index.md`](index.md) for the site's own description.
+
 ## Extraction notes
 
 The guide page was fetched directly (browser-rendered); content was long enough that the fetch was truncated at ~20k characters — the truncated tail covers the file-structure example for the hotel-card walkthrough, not a new concept. For the full remaining detail, read [hxl-rich-ui.md](https://developer.salesforce.com/docs/platform/hxl/guide/hxl-rich-ui.md) directly, or the dedicated [Composition](https://developer.salesforce.com/docs/platform/hxl/guide/hxl-widget-composition.md) / [Configuration](https://developer.salesforce.com/docs/platform/hxl/guide/hxl-widget-configuration.md) / [Schema](https://developer.salesforce.com/docs/platform/hxl/guide/hxl-widget-schema.md) pages, which were not individually fetched for this content summary.
