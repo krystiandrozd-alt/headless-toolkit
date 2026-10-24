@@ -6,16 +6,14 @@ A reference catalog of Salesforce's **Headless Toolkit** developer documentation
 
 ## Structure
 
-The Headless Toolkit spans four documentation areas, each with its own `llms-*.txt` index:
+The Headless Toolkit spans four documentation areas, each in its own folder with an `index.md` (page-by-page link catalog) and a `content.md` (grounded, independently-written summary with per-claim source citations):
 
-| Area | Index file | Scope |
-|---|---|---|
-| **Get Started** | [`llms-headless-three-sixty.txt`](https://developer.salesforce.com/docs/llms-headless-three-sixty.txt) | Entry point: what headless development is, workspace choices, MCP vs. CLI vs. APIs |
-| **Headless Experience Layer (HXL)** | [`llms-headless-experience-layer.txt`](https://developer.salesforce.com/docs/llms-headless-experience-layer.txt) | Beta framework for UI-agnostic, portable agentic app UIs (widgets, components, MCP/Agentforce mapping) |
-| **Multi-Framework** | [`llms-multi-framework.txt`](https://developer.salesforce.com/docs/llms-multi-framework.txt) | Build on the Platform with React/Angular (Data SDK, UIBundle lifecycle) + Microfrontend UI embedding |
-| **Hosted MCP Servers** | [`llms-hosted-mcp-servers.txt`](https://developer.salesforce.com/docs/llms-hosted-mcp-servers.txt) | The MCP server catalog (Headless 360, Data 360, SObject*, Tableau, etc.), client setup, troubleshooting |
-
-Full page-by-page catalog: [headless-toolkit-content-list.md](headless-toolkit-content-list.md).
+| Area | Folder | `llms-*.txt` index | Scope |
+|---|---|---|---|
+| **Get Started** | [`get-started/`](get-started/) | [`llms-headless-three-sixty.txt`](https://developer.salesforce.com/docs/llms-headless-three-sixty.txt) | Entry point: what headless development is, workspace choices, MCP vs. CLI vs. APIs |
+| **Headless Experience Layer (HXL, Beta)** | [`headless-experience-layer-hxl-beta/`](headless-experience-layer-hxl-beta/) | [`llms-headless-experience-layer.txt`](https://developer.salesforce.com/docs/llms-headless-experience-layer.txt) | Beta framework for UI-agnostic, portable agentic app UIs (widgets, components, MCP/Agentforce mapping) |
+| **Multi-Framework + Microfrontend** | [`multi-framework-microfrontend/`](multi-framework-microfrontend/) | [`llms-multi-framework.txt`](https://developer.salesforce.com/docs/llms-multi-framework.txt) | Build on the Platform with React/Angular (Data SDK, UIBundle lifecycle) + Microfrontend UI embedding |
+| **Hosted MCP Servers** | [`hosted-mcp-servers/`](hosted-mcp-servers/) | [`llms-hosted-mcp-servers.txt`](https://developer.salesforce.com/docs/llms-hosted-mcp-servers.txt) | The MCP server catalog (Headless 360, Data 360, SObject*, Tableau, etc.), client setup, troubleshooting |
 
 ## Source
 
