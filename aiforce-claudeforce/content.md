@@ -27,6 +27,25 @@ Both the Claudeforce and Salesforce-in-Claude articles independently state the s
 - Safety default during beta: most skills are read-only or produce drafts for human review — nothing is created/updated/deleted without the user acting. A subset of skills now support direct record create/update, but only when the user was explicitly granted that access via the Salesforce MCP server settings.
 *Source: [What Is Salesforce in Claude (Beta)](https://help.salesforce.com/s/articleView?id=sales.what_is_salesforce_in_claude.htm&type=5) — help article page.*
 
+## Launch context and framing (from the Salesforce.com announcement blog)
+
+*Source: [Headless Development: How Humans & Agents Build on Salesforce](https://www.salesforce.com/blog/headless-salesforce-development/), by Ryane Bohm (Developer Services Product Marketing), published 2026-05-20 — Salesforce.com Blog (official first-party, marketing domain rather than developer.salesforce.com).*
+
+This is the launch announcement for AIforce, framed as the payoff of a bet Salesforce made at TDX 2023: that the platform's future needed humans and agents building side by side, not humans alone. The post states AIforce rests on three principles:
+
+1. **Agents and humans build together** — agents get full platform access, not a restricted subset.
+2. **Scaling is secure** — governance, role-based access, and audit trails hold even as agents touch sensitive data.
+3. **Deployment can happen on any surface** — built once, shown everywhere (Slack, Teams, ChatGPT, custom apps), not rebuilt per channel.
+
+It names the **Headless Experience Layer** as AIforce's "foundation" (separates what an agent does from how it appears) and **Multi-Framework** as its "accelerator" (build native Salesforce apps in React, with security/auth handled automatically) — consistent with how both are already documented in [`../headless-experience-layer-hxl-beta/`](../headless-experience-layer-hxl-beta/) and [`../multi-framework-microfrontend/`](../multi-framework-microfrontend/).
+
+**Worked example given in the post** (a customer renewal alert, built once instead of per-surface):
+1. *Describe it* — natural language in Agentforce Vibes, which already understands the org's data model and governance via MCP.
+2. *Build the front end* — the dashboard in React via Multi-Framework, security/auth automatic.
+3. *Deploy everywhere* — Headless Experience Layer publishes the one definition natively to Slack, mobile, Teams, ChatGPT, etc.
+
+The post also links to the HXL Playground (see [`../headless-experience-layer-hxl-beta/index.md`](../headless-experience-layer-hxl-beta/index.md)) as one of its four closing resource links, confirming that site's official status independently of the earlier direct-visit check.
+
 ## How this connects to the Headless Toolkit catalog
 
 This folder sits alongside [`../get-started/`](../get-started/), [`../headless-experience-layer-hxl-beta/`](../headless-experience-layer-hxl-beta/), [`../multi-framework-microfrontend/`](../multi-framework-microfrontend/), and [`../hosted-mcp-servers/`](../hosted-mcp-servers/) because AIforce is explicitly described as "powered by" the same Headless Toolkit those four folders document. Claudeforce/Salesforce in Claude is one concrete, named consumer of that toolkit (via MCP), not a separate technology stack.
