@@ -7,6 +7,11 @@ Not one of the four `llms-*.txt` documentation areas — this is the brand/produ
 | Welcome to AIforce | https://help.salesforce.com/s/articleView?id=platform.aif_welcome.htm&type=5 | help article page |
 | About Claudeforce | https://help.salesforce.com/s/articleView?id=platform.what_is_claudeforce.htm&type=5 | help article page |
 | What Is Salesforce in Claude (Beta) | https://help.salesforce.com/s/articleView?id=sales.what_is_salesforce_in_claude.htm&type=5 | help article page |
+| Salesforce in Claude Skills Reference (Beta) | https://help.salesforce.com/s/articleView?id=sales.skills_ref.htm&type=5 | help article page |
+| How Skills Work in Salesforce in Claude (Beta) | https://help.salesforce.com/s/articleView?id=sales.how_skills_work.htm&type=5 | help article page |
+| Claudeforce (marketing page) | https://www.salesforce.com/claudeforce/ | marketing page (official, salesforce.com) |
+
+Full skills table (33 skills, 8 categories) and the 33-vs-37-skills discrepancy: see [`salesforce-in-claude-skills-reference.md`](salesforce-in-claude-skills-reference.md).
 
 ## Not yet fetched (linked from the articles above)
 
@@ -21,4 +26,5 @@ Not one of the four `llms-*.txt` documentation areas — this is the brand/produ
 | Activate the MCP Server | What Is Salesforce in Claude |
 | Create and Configure the External Client App (ECA) | What Is Salesforce in Claude |
 | Configure Your Workspace in Salesforce in Claude | What Is Salesforce in Claude |
-| Salesforce in Claude Skills Reference (Beta) | What Is Salesforce in Claude |
+| Security, Permissions, and Data Handling | How Skills Work |
+| Set Tool Restrictions | How Skills Work |
