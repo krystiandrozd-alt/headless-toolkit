@@ -15,6 +15,16 @@ The Headless Toolkit spans four documentation areas, each in its own folder with
 | **Multi-Framework + Microfrontend** | [`multi-framework-microfrontend/`](multi-framework-microfrontend/) | [`llms-multi-framework.txt`](https://developer.salesforce.com/docs/llms-multi-framework.txt) | Build on the Platform with React/Angular (Data SDK, UIBundle lifecycle) + Microfrontend UI embedding |
 | **Hosted MCP Servers** | [`hosted-mcp-servers/`](hosted-mcp-servers/) | [`llms-hosted-mcp-servers.txt`](https://developer.salesforce.com/docs/llms-hosted-mcp-servers.txt) | The MCP server catalog (Headless 360, Data 360, SObject*, Tableau, etc.), client setup, troubleshooting |
 
+Plus one folder outside the `llms-*.txt` structure, for the brand/product hierarchy sitting above these four areas:
+
+| Area | Folder | Scope |
+|---|---|---|
+| **AIforce + Claudeforce** | [`aiforce-claudeforce/`](aiforce-claudeforce/) | The AIforce umbrella (powered by this toolkit), the Salesforce↔Anthropic Claudeforce partnership, and the Salesforce in Claude / Sales Cloud in Claude product line — sourced from `help.salesforce.com`, not `developer.salesforce.com` |
+
+And a concept primer in `get-started/`:
+
+- [`get-started/why-headless-360.md`](get-started/why-headless-360.md) — synthesis of the official [Headless 360 developer blog post](https://developer.salesforce.com/blogs/2026/05/headless-360-what-it-means-for-developers): the "two kinds of MCP tools" distinction, the governance model, and why this toolkit's four areas (Multi-Framework, HXL, Hosted MCP Servers) are presented as one platform shift.
+
 ## Source
 
-All entries trace back to pages under `developer.salesforce.com/docs/platform/...`, captured 2026-10-24. Descriptions in the catalog are written independently from page titles/metadata, not copied page bodies — see each linked `.md` URL for full text.
+Developer-doc entries trace back to pages under `developer.salesforce.com/docs/platform/...` and the blog post above; AIforce/Claudeforce entries trace back to `help.salesforce.com` articles. Captured 2026-10-24. Descriptions in the catalog are written independently from page titles/metadata, not copied page bodies — see each linked `.md` URL for full text.
