@@ -281,6 +281,36 @@ The current UI Embedding supersedes an earlier **Developer Preview** (see [Migra
 - **No sample outputs.** Official docs publish no example skill outputs or rendered widget cards.
 - **Billing.** Flex Credits are required for Hosted MCP Servers; pricing is not covered.
 
+## Recommended sources
+
+Official Salesforce docs to go deeper on each area. Start from the aggregated [`llms.txt`](https://developer.salesforce.com/docs/llms.txt) index, which lists every product-specific `llms-*.txt` file (LLM-friendly link lists to `.md` doc pages). All links below were checked on 2026-11-23.
+
+| Area | Source | What it covers |
+|---|---|---|
+| Entry point | [`llms.txt`](https://developer.salesforce.com/docs/llms.txt) | Aggregated index of all product `llms-*.txt` files |
+| Entry point | [`llms-headless-three-sixty.txt`](https://developer.salesforce.com/docs/llms-headless-three-sixty.txt) | Headless Toolkit hub: welcome, MCP solutions, core concepts |
+| Hosted MCP Servers | [`llms-hosted-mcp-servers.txt`](https://developer.salesforce.com/docs/llms-hosted-mcp-servers.txt) | Org setup, client configuration, server reference, troubleshooting |
+| Hosted MCP Servers | [`llms-api-catalog.txt`](https://developer.salesforce.com/docs/llms-api-catalog.txt) | API Catalog Connect REST API: create custom Salesforce-hosted MCP servers, register external ones |
+| HXL widgets | [`llms-headless-experience-layer.txt`](https://developer.salesforce.com/docs/llms-headless-experience-layer.txt) | HXL guide (Beta) and component reference |
+| HXL widgets | [`llms-lightning-type-systems.txt`](https://developer.salesforce.com/docs/llms-lightning-type-systems.txt) | Custom Lightning types (Apex- and object-based), renderer overrides |
+| Multi-Framework | [`llms-multi-framework.txt`](https://developer.salesforce.com/docs/llms-multi-framework.txt) | Multi-Framework guide and Data SDK; also the Microfrontend (UI Embedding) pages |
+| Multi-Framework | [`llms-graphql-api.txt`](https://developer.salesforce.com/docs/llms-graphql-api.txt) | GraphQL API queries, mutations, limits |
+| Multi-Framework | [`llms-lwc.txt`](https://developer.salesforce.com/docs/llms-lwc.txt) | LWC developer guide, for the React-vs-LWC choice |
+| UI Embedding | [`llms-agentforce-conversation-client.txt`](https://developer.salesforce.com/docs/llms-agentforce-conversation-client.txt) | Agentforce Conversation Client SDK: embed employee-agent chat in Lightning and external web apps |
+| Tooling | [`llms-salesforcedx.txt`](https://developer.salesforce.com/docs/llms-salesforcedx.txt) | Salesforce Extensions for VS Code, Agentforce Vibes, CLI plugin development |
+| Agentforce / Agent Script | [`llms-genai.txt`](https://developer.salesforce.com/docs/llms-genai.txt) | Agentforce Developer Guide, Agent API, Agentforce DX, Agent Script |
+| Agentforce / Agent Script | [Agent Script Reference](https://developer.salesforce.com/docs/ai/agentforce/guide/ascript-reference.html) | Syntax, keywords, blocks |
+| Agentforce / Agent Script | [Agent Script Patterns](https://developer.salesforce.com/docs/ai/agentforce/guide/ascript-patterns.html) | Common patterns: routing, conditionals, action chaining, transitions |
+| Agentforce / Agent Script | [Agent Script Recipes](https://developer.salesforce.com/sample-apps/agent-script-recipes) | Sample app of minimal recipes, from HelloWorld to multi-subagent navigation |
+| Platform reference | [`llms-product-docs.txt`](https://developer.salesforce.com/docs/llms-product-docs.txt) | Apex Developer Guide, Apex Reference, Object Reference, Metadata API |
+
+No product-specific `llms-*.txt` file covers Salesforce in Claude; its docs are on `help.salesforce.com` (see [`../aiforce-claudeforce/index.md`](../aiforce-claudeforce/index.md)).
+
+### Agent Script note
+
+Agent Script is the language for building Agentforce agents; each agent's script is a `.agent` file in its authoring bundle (e.g. `force-app/main/default/aiAuthoringBundles/<Name>/<Name>.agent`). Inside reasoning instructions, `->` begins deterministic logic (`if`/`else`, `run` actions, transitions) and `|` begins a natural-language prompt instruction for the LLM. It sits on the Agentforce side of the toolkit: it defines the agent and actions, while HXL (section 3) controls how that action output renders.
+*Source: [Get Started with Agent Script](https://developer.salesforce.com/docs/ai/agentforce/guide/agent-script.html); [Code Your Agent Using Its Agent Script File](https://developer.salesforce.com/docs/ai/agentforce/guide/agent-dx-nga-script.html); [Agent Script Reference](https://developer.salesforce.com/docs/ai/agentforce/guide/ascript-reference.html).*
+
 ## Source
 
-Synthesized from this repo's existing files (captured 2026-10-24); no new pages were fetched for this guide. Each section's *Source:* lines point to the repo file and, through it, the official `developer.salesforce.com` / `help.salesforce.com` page.
+Sections 1–5 and Known gaps are synthesized from this repo's existing files (captured 2026-10-24); no new pages were fetched for them. Each section's *Source:* lines point to the repo file and, through it, the official `developer.salesforce.com` / `help.salesforce.com` page. Recommended sources were added and link-checked 2026-11-23.
