@@ -25,6 +25,10 @@ And a concept primer in `get-started/`:
 
 - [`get-started/why-headless-360.md`](get-started/why-headless-360.md) — synthesis of the official [Headless 360 developer blog post](https://developer.salesforce.com/blogs/2026/05/headless-360-what-it-means-for-developers): the "two kinds of MCP tools" distinction, the governance model, and why this toolkit's four areas (Multi-Framework, HXL, Hosted MCP Servers) are presented as one platform shift.
 
+And a cross-area guide in `docs/`:
+
+- [`docs/extensions.md`](docs/extensions.md) — the five ways to extend the toolkit (Hosted MCP Servers, Salesforce in Claude skills, HXL widgets, Multi-Framework, UI Embedding): what each extends, prerequisites, setup steps and quoted commands, status, and known gaps.
+
 ## Source
 
 Developer-doc entries trace back to pages under `developer.salesforce.com/docs/platform/...` and the blog post above; AIforce/Claudeforce entries trace back to `help.salesforce.com` articles. Captured 2026-10-24. Descriptions in the catalog are written independently from page titles/metadata, not copied page bodies — see each linked `.md` URL for full text.
