@@ -14,7 +14,17 @@ related: [information-architecture]
 
 Checks against official Salesforce documentation (developer.salesforce.com, help.salesforce.com, architect.salesforce.com, docs.mulesoft.com). Newest first.
 
-## 2026-11-26
+## 2026-11-26 (batch 2)
+
+| Item | Result | Source |
+|---|---|---|
+| Topics renamed subagents | Since April 2026; no functional change | [Get Started with Agentforce APIs and SDKs](https://developer.salesforce.com/docs/ai/agentforce/guide/get-started-agents.html) |
+| Agentforce developer surface and testing options | Agent Script, Agentforce DX, Python SDK, Testing API, Agent API, Custom Connections, Mobile SDK, Enhanced Chat; new Testing Center in Agentforce Studio is Beta | same; [Run Agent Tests with Agentforce DX](https://developer.salesforce.com/docs/ai/agentforce/guide/agent-dx-test-run.html) |
+| Data 360 MCP Server | Three meta-tools; API v66.0+; counts toward Connect API limits and Flex Credits; replaces the legacy SQL server | [Data 360 MCP Server](https://developer.salesforce.com/docs/platform/hosted-mcp-servers/references/reference/data360-mcp.html) |
+| Agentforce for Communications Cloud | Billing Resolution subagent, SLO Insights, Quote Recipients Grouping, Cart Operations, Enterprise Quoting (ESM) | [Agentforce for Communications Cloud](https://help.salesforce.com/s/articleView?id=ind.comms_agentforce_for_communications_cloud.htm&release=264.0.0&type=5) |
+| Client references | Enxoo e& and Bayobab materials were proposals, not AI deployments; not to be used as references (confirmed by Krystian) | internal |
+
+## 2026-11-26 (batch 1)
 
 | Item | Result | Source |
 |---|---|---|

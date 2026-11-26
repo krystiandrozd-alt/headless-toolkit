@@ -5,8 +5,8 @@ Internal Enxoo learning material on Salesforce AIforce (formerly Headless 360), 
 | Track | For | Start with |
 |---|---|---|
 | **Core** | All employees | [`scenarios/request-journeys.md`](scenarios/request-journeys.md), [`get-started/why-headless-360.md`](get-started/why-headless-360.md), [`reference/glossary.md`](reference/glossary.md) |
-| **Developer** | Developers and technical architects | [`hosted-mcp-servers/`](hosted-mcp-servers/), [`headless-experience-layer-hxl-beta/`](headless-experience-layer-hxl-beta/), [`multi-framework-microfrontend/`](multi-framework-microfrontend/) |
-| **Presales** | Presales and business leads | [`business/licensing-and-commercial.md`](business/licensing-and-commercial.md), [`aiforce-claudeforce/`](aiforce-claudeforce/), [`scenarios/request-journeys.md`](scenarios/request-journeys.md) |
+| **Developer** | Developers and technical architects | [`agentforce/`](agentforce/), [`data-360/`](data-360/), [`hosted-mcp-servers/`](hosted-mcp-servers/), [`headless-experience-layer-hxl-beta/`](headless-experience-layer-hxl-beta/), [`multi-framework-microfrontend/`](multi-framework-microfrontend/) |
+| **Presales** | Presales and business leads | [`business/licensing-and-commercial.md`](business/licensing-and-commercial.md), [`business/use-cases-telco.md`](business/use-cases-telco.md), [`aiforce-claudeforce/`](aiforce-claudeforce/), [`scenarios/request-journeys.md`](scenarios/request-journeys.md) |
 
 This repository is the **content layer** (single source of truth). The interactive Headless Map page is the presentation layer built from these files.
 
@@ -20,7 +20,9 @@ This repository is the **content layer** (single source of truth). The interacti
 | [`headless-experience-layer-hxl-beta/`](headless-experience-layer-hxl-beta/) | HXL widgets (Beta) |
 | [`multi-framework-microfrontend/`](multi-framework-microfrontend/) | React / Angular apps on Salesforce, UI Embedding |
 | [`aiforce-claudeforce/`](aiforce-claudeforce/) | AIforce, Claudeforce, Salesforce in Claude |
-| [`business/`](business/) | Licensing, commercial prerequisites, presales checklist |
+| [`agentforce/`](agentforce/) | Agents, subagents, actions, Agent Script, testing, APIs |
+| [`data-360/`](data-360/) | Data 360, grounding, Data 360 MCP |
+| [`business/`](business/) | Licensing and commercial prerequisites, telco use cases (shipped vs proposed) |
 | [`scenarios/`](scenarios/) | End-to-end request journeys |
 | [`reference/`](reference/) | Glossary |
 

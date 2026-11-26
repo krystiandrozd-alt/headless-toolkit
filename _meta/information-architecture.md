@@ -57,6 +57,8 @@ Presales modules: P1 pitch, P2 discovery, P3 licensing checklist, P4 patterns A-
 |---|---|
 | `_meta/` | Architecture, schema, verification log |
 | `get-started/`, `hosted-mcp-servers/`, `headless-experience-layer-hxl-beta/`, `multi-framework-microfrontend/`, `aiforce-claudeforce/` | Topic areas (existing) |
+| `agentforce/` | Part 2.4 Agents (module D3) |
+| `data-360/` | Part 2.1 Data and context |
 | `reference/` | Glossary and other look-up material |
 | `business/` | Licensing, commercial, use cases |
 | `scenarios/` | End-to-end request journeys |
