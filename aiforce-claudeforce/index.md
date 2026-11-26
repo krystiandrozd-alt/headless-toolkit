@@ -1,3 +1,15 @@
+---
+id: aiforce-claudeforce-index
+title: "AIforce and Claudeforce — Index"
+type: index
+part: "6"
+tracks: [presales]
+level: 201
+status: n/a
+last_verified: 2026-10-24
+related: [aiforce-claudeforce]
+---
+
 # AIforce + Claudeforce — Index
 
 Not one of the four `llms-*.txt` documentation areas — this is the brand/product hierarchy that sits above them, captured from Salesforce Help articles while researching the Headless Toolkit.

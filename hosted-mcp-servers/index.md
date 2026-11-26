@@ -1,3 +1,15 @@
+---
+id: hosted-mcp-servers-index
+title: "Hosted MCP Servers — Index"
+type: index
+part: "6"
+tracks: [developer]
+level: 301
+status: mixed
+last_verified: 2026-10-24
+related: [hosted-mcp-servers]
+---
+
 # Hosted MCP Servers — Index
 
 Source: [`llms-hosted-mcp-servers.txt`](https://developer.salesforce.com/docs/llms-hosted-mcp-servers.txt).

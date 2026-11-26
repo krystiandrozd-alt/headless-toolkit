@@ -1,3 +1,15 @@
+---
+id: hosted-mcp-servers
+title: "Hosted MCP Servers"
+type: topic
+part: "2.5"
+tracks: [core, developer, presales]
+level: 201
+status: mixed
+last_verified: 2026-11-26
+related: [licensing-and-commercial, request-journeys, glossary]
+---
+
 # Hosted MCP Servers — Content
 
 Synthesis written independently from the two source pages below (not copied text; the server table is re-derived with original short descriptions, not Salesforce's wording).
@@ -19,22 +31,22 @@ Hosted MCP Servers are Salesforce's implementation of the open Model Context Pro
 SObject CRUD tools (respecting field-level security and sharing), exposing Apex Invocable Actions / `@AuraEnabled` methods / Apex REST / Flows / Named Queries as MCP tools without writing connector code, Data 360 SQL and Tableau analytics access, and using Prompt Builder templates from an MCP client.
 *Source: same page as above.*
 
-### Billing note
+### Billing note (verified 2026-11-26)
 
 Hosted MCP Servers are explicitly scoped to customers with **Flex Credits** — usage may be billed. This is a real adoption constraint, not just a technical detail.
-*Source: same page as above.*
+*Source: same page as above.* See also [`../business/licensing-and-commercial.md`](../business/licensing-and-commercial.md).
 
 ## Server catalog (condensed, paraphrased)
 
 | Server | What it's for (paraphrased) | Org auth | Data | Metadata |
 |---|---|---|---|---|
-| Archive Connect | Search/manage archived data: unarchive, anonymize, delete | Yes | Yes | No |
+| Archive Connect | Search/manage archived data: unarchive, anonymize, delete. **Accessed through the Headless 360 server** (use its Discover tool), not a separate endpoint (verified 2026-11-26) | Yes | Yes | No |
 | Backup and Recover | Inspect/compare backups, trigger a backup, review restore audit events (destructive restore stays UI-only) | Yes | Yes | No |
 | Content Read-Only / Content Write | Query vs. create/update Salesforce CMS content, folders, workspaces, channels | Yes | Yes | No |
 | CRM Analytics (Beta) | Read-only querying of CRM Analytics apps/datasets/dashboards | Yes | No | Yes |
 | Data 360 | Query/create/update/delete Data 360 objects (DLOs, DMOs, segments, data kits); ingestion, mapping, identity resolution | Yes | Yes | Yes |
 | Data 360 Legacy | Superseded by Data 360 — use that instead | Yes | Yes | Yes |
-| Headless 360 (Beta) | Broadest server: SF data CRUD, user/permission management, Apex trigger read/write/deploy, platform events/CDC, Commerce Cloud orders | Yes | Yes | Yes |
+| Headless 360 (Beta) | Broadest server. Exposes only **four tools** (Discover, Describe, Dispatch, Dispatch Read-Only) over a growing library of operations: records CRUD, user/permission management, Apex triggers, platform events/CDC, named credentials, Commerce Cloud orders. At beta launch: dozens of operations, mostly admin Setup tasks (verified 2026-11-26) | Yes | Yes | Yes |
 | Heroku | Manage Heroku apps, teams, projects | No | No | Yes |
 | Metadata API Context (Beta) | Discover org metadata types/fields/constraints for dev scenarios | Yes | No | Yes |
 | Metadata Grounding (Beta) | Read-only discovery of org metadata (objects, fields, LWC, users, permission sets, flows, Apex) | Yes | No | Yes |

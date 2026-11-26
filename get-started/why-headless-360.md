@@ -1,4 +1,18 @@
+---
+id: why-headless-360
+title: "Why Headless 360 (now AIforce) — Concept Primer"
+type: topic
+part: "1"
+tracks: [core, developer, presales]
+level: 101
+status: n/a
+last_verified: 2026-10-24
+related: [get-started, aiforce-claudeforce, request-journeys]
+---
+
 # Why Headless 360 — Concept Primer
+
+> **Naming:** Headless 360 was rebranded to **AIforce** on 4 September 2026; functionality unchanged. *Source: [Release notes: AIforce](https://help.salesforce.com/s/articleView?id=release-notes.rn_headless360.htm&release=264.0.0&type=5).*
 
 Synthesis written independently from the source below (not copied text). This is the most conceptual/philosophical piece in the catalog — it's a first-party Salesforce Developers Blog post, not a reference doc, so treat it as framing/rationale rather than an API or setup guide.
 

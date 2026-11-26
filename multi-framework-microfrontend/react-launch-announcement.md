@@ -1,8 +1,22 @@
+---
+id: multi-framework-react-launch
+title: "Multi-Framework launch announcement (April 2026)"
+type: historical
+part: "4"
+tracks: [developer]
+level: 201
+status: n/a
+last_verified: 2026-10-24
+related: [multi-framework-microfrontend]
+---
+
 # Multi-Framework Launch Announcement (React) — Content
 
 Synthesis written independently from the source below (not copied text; the comparison table and CLI steps are re-derived, not pasted verbatim). Code sample below is reproduced because it is a short illustrative snippet under 60 lines, standard practice for developer blog posts — not prose being quoted.
 
 *Source: [Build with React, Run on Salesforce: Introducing Salesforce Multi-Framework](https://developer.salesforce.com/blogs/2026/04/build-with-react-run-on-salesforce-introducing-salesforce-multi-framework), by Amanda Lane, Alice Oh, Charles Watkins — Salesforce Developers Blog (official first-party), published 2026-04.*
+
+> **Historical document (April 2026).** Statuses below are out of date. For the current status see [`content.md`](content.md), section "Status update — Winter '27".
 
 ## Status at publication
 

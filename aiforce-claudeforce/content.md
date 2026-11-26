@@ -1,3 +1,15 @@
+---
+id: aiforce-claudeforce
+title: "AIforce and Claudeforce"
+type: topic
+part: "1"
+tracks: [core, presales]
+level: 101
+status: mixed
+last_verified: 2026-10-24
+related: [licensing-and-commercial, glossary, request-journeys]
+---
+
 # AIforce + Claudeforce — Content
 
 Synthesis written independently from the three source pages below (not copied text). All three were fetched via browser rendering; the first two initially returned shell/loading content and only resolved after the page's cookie-consent dialog was dismissed — a real extraction caveat, not a 404 or missing article.
@@ -42,7 +54,7 @@ It names the **Headless Experience Layer** as AIforce's "foundation" (separates 
 **Worked example given in the post** (a customer renewal alert, built once instead of per-surface):
 1. *Describe it* — natural language in Agentforce Vibes, which already understands the org's data model and governance via MCP.
 2. *Build the front end* — the dashboard in React via Multi-Framework, security/auth automatic.
-3. *Deploy everywhere* — Headless Experience Layer publishes the one definition natively to Slack, mobile, Teams, ChatGPT, etc.
+3. *Deploy everywhere* — Headless Experience Layer publishes the one definition natively to Slack, mobile, Teams, ChatGPT, etc. *(Marketing claim. The HXL developer guide currently documents Agentforce plus MCP Apps-compatible agents such as Claude Desktop, Slackbot and ChatGPT; Teams and mobile are not documented there — see [`../headless-experience-layer-hxl-beta/content.md`](../headless-experience-layer-hxl-beta/content.md).)*
 
 The post also links to the HXL Playground (see [`../headless-experience-layer-hxl-beta/index.md`](../headless-experience-layer-hxl-beta/index.md)) as one of its four closing resource links, confirming that site's official status independently of the earlier direct-visit check.
 

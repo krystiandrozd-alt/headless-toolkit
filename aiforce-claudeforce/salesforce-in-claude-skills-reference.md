@@ -1,3 +1,15 @@
+---
+id: salesforce-in-claude-skills
+title: "Salesforce in Claude — Skills Reference"
+type: topic
+part: "5"
+tracks: [presales]
+level: 201
+status: beta
+last_verified: 2026-10-24
+related: [aiforce-claudeforce, request-journeys]
+---
+
 # Salesforce in Claude — Skills Reference
 
 Synthesis written independently from the sources below (not copied text; the skills table is re-derived from the source table, same structure/content, different wording where descriptive).

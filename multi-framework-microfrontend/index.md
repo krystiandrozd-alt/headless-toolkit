@@ -1,3 +1,15 @@
+---
+id: multi-framework-index
+title: "Multi-Framework — Index"
+type: index
+part: "6"
+tracks: [developer]
+level: 301
+status: mixed
+last_verified: 2026-10-24
+related: [multi-framework-microfrontend]
+---
+
 # Multi-Framework + Microfrontend — Index
 
 Source: [`llms-multi-framework.txt`](https://developer.salesforce.com/docs/llms-multi-framework.txt).

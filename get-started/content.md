@@ -1,3 +1,15 @@
+---
+id: get-started
+title: "Get Started — Content"
+type: topic
+part: "1"
+tracks: [core, developer, presales]
+level: 101
+status: mixed
+last_verified: 2026-10-24
+related: [why-headless-360, hosted-mcp-servers, glossary]
+---
+
 # Get Started — Content
 
 Synthesis written independently from the three source pages below (not copied text). Each claim traces to a specific page.

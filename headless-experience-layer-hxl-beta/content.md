@@ -1,3 +1,15 @@
+---
+id: headless-experience-layer-hxl-beta
+title: "Headless Experience Layer (HXL)"
+type: topic
+part: "2.6"
+tracks: [developer, presales]
+level: 201
+status: beta
+last_verified: 2026-11-26
+related: [hosted-mcp-servers, request-journeys, glossary]
+---
+
 # Headless Experience Layer (HXL, Beta) — Content
 
 Synthesis written independently from the source page below (not copied text).
@@ -28,13 +40,18 @@ A widget only becomes dynamic once it's wired to a **custom Lightning type**'s `
 Both "MCP result wrapper" and "MCP payload" are just role names for ordinary object-based custom Lightning types, not distinct metadata categories. Only the wrapper type carries a `renderer.json`; the payload type doesn't.
 *Source: [Build Rich UI Experiences with HXL Widgets](https://developer.salesforce.com/docs/platform/hxl/guide/hxl-rich-ui.md) — developer doc page (worked example: a `hotelCard` widget fed by a `HotelSearchResult.Hotel` Apex class).*
 
+## Where widgets render (verified 2026-11-26)
+
+In Agentforce (employee agent in Lightning Experience) and in any external agent compatible with the **MCP Apps** standard, for example Claude Desktop, Slackbot and ChatGPT. External agents need a custom MCP server with the widget's tools and resources. Widgets do **not** currently render when Slackbot uses Block Kit.
+*Source: [Use HXL Widgets with Agents That Support MCP](https://developer.salesforce.com/docs/platform/hxl/guide/hxl-mcp-channels.html) — developer doc page.*
+
 ## Status
 
-HXL is explicitly a **Beta** developer guide as of the capture date — treat the widget/metadata contract as subject to change, and check the [Release Notes](https://developer.salesforce.com/docs/platform/hxl/guide/hxl-release-notes.md) page before building against it.
+HXL is a **Beta** service (Beta Services Terms), available from API v67.0, enabled in Setup > Headless Experience Layer Settings; announced in Summer '26 release notes (re-verified 2026-11-26) — treat the widget/metadata contract as subject to change, and check the [Release Notes](https://developer.salesforce.com/docs/platform/hxl/guide/hxl-release-notes.md) page before building against it.
 
 ## Practical tooling: the HXL Playground site and AI toolkit
 
-Beyond the docs guide, Salesforce runs a dedicated site, [headlessexperiencelayer.com](https://www.headlessexperiencelayer.com/) ("HXL Playground"), confirmed official (page title "HXL Playground | Salesforce"). It distributes a downloadable ZIP — component schemas, widget examples, and widget authoring guidance for building HXL widgets with an AI assistant, entry point `SKILL.md` — which is the upstream source of the `hxl-widget-authoring` Claude Code skill already installed locally in this environment (same "re-download the ZIP periodically" language appears in both). See [`index.md`](index.md) for the site's own description.
+Beyond the docs guide, Salesforce runs a dedicated site, [headlessexperiencelayer.com](https://www.headlessexperiencelayer.com/) ("HXL Playground"), confirmed official (page title "HXL Playground | Salesforce"). It distributes a downloadable ZIP — component schemas, widget examples, and widget authoring guidance for building HXL widgets with an AI assistant, entry point `SKILL.md`. See [`index.md`](index.md) for the site's own description.
 
 ## Extraction notes
 

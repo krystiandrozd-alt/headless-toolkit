@@ -1,3 +1,15 @@
+---
+id: get-started-index
+title: "Get Started — Index"
+type: index
+part: "6"
+tracks: [developer]
+level: 201
+status: n/a
+last_verified: 2026-10-24
+related: [get-started]
+---
+
 # Get Started — Index
 
 Entry-point hub for Salesforce's Headless Toolkit. Source: [`llms-headless-three-sixty.txt`](https://developer.salesforce.com/docs/llms-headless-three-sixty.txt).

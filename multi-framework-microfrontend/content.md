@@ -1,6 +1,25 @@
+---
+id: multi-framework-microfrontend
+title: "Multi-Framework and Microfrontend"
+type: topic
+part: "2.6"
+tracks: [developer, presales]
+level: 201
+status: mixed
+last_verified: 2026-11-26
+related: [glossary, licensing-and-commercial]
+---
+
 # Multi-Framework + Microfrontend — Content
 
 Synthesis written independently from the two source pages below (not copied text).
+
+## Status update — Winter '27 (verified 2026-11-26)
+
+- The current overview no longer labels Multi-Framework as Beta; only microfrontend embedding is Beta. No explicit "generally available" sentence was found, so confirm before stating GA to a client.
+- Winter '27 adds: Angular (alongside React), management in App Manager, packaging with 2GP (unlocked and managed, AppExchange), Data SDK extensions, Content Read-Only MCP server (GA) and Content Write MCP server. Multi-Framework Insights and Brand Toolkit are Beta.
+- Availability: Enterprise, Performance, Unlimited, Developer and Partner Developer editions on **Hyperforce only**; not in Government Cloud or Alibaba Cloud. Packaging is unsupported for external-facing apps.
+*Sources: [Multi-Framework Overview](https://developer.salesforce.com/docs/platform/multiframework/guide/multiframework-overview.html); [Set Up Your Org](https://developer.salesforce.com/docs/platform/multiframework/guide/mfw-setup.html); [Winter '27 release notes: Salesforce Multi-Framework](https://help.salesforce.com/s/articleView?id=release-notes.rn_headless360_mfw.htm&release=264.0.0&type=5).*
 
 ## Multi-Framework: build with React/Angular, run on Salesforce
 

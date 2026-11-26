@@ -1,30 +1,42 @@
-# Salesforce Headless Toolkit — Content Catalog
+# Headless Map — Salesforce AIforce / Headless Toolkit knowledge base
 
-A reference catalog of Salesforce's **Headless Toolkit** developer documentation: the APIs, MCP servers, UI frameworks, and plugins Salesforce ships for building on the platform without the Lightning browser UI (Slack, Teams, WhatsApp, ChatGPT, Claude, custom apps, etc.).
+Internal Enxoo learning material on Salesforce AIforce (formerly Headless 360), the Headless Toolkit, Agentforce and related architecture. It serves three groups:
 
-> The requested starting point, `https://developer.salesforce.com/developer-centers/headless`, returns a 404 — there is no "Headless" entry in the `developer-centers` index. The actual documentation hub lives under `/docs/platform/headless-get-started/`, discovered via the aggregated [`llms.txt`](https://developer.salesforce.com/docs/llms.txt) index. This catalog is built from that real hub and its three linked sub-areas.
+| Track | For | Start with |
+|---|---|---|
+| **Core** | All employees | [`scenarios/request-journeys.md`](scenarios/request-journeys.md), [`get-started/why-headless-360.md`](get-started/why-headless-360.md), [`reference/glossary.md`](reference/glossary.md) |
+| **Developer** | Developers and technical architects | [`hosted-mcp-servers/`](hosted-mcp-servers/), [`headless-experience-layer-hxl-beta/`](headless-experience-layer-hxl-beta/), [`multi-framework-microfrontend/`](multi-framework-microfrontend/) |
+| **Presales** | Presales and business leads | [`business/licensing-and-commercial.md`](business/licensing-and-commercial.md), [`aiforce-claudeforce/`](aiforce-claudeforce/), [`scenarios/request-journeys.md`](scenarios/request-journeys.md) |
+
+This repository is the **content layer** (single source of truth). The interactive Headless Map page is the presentation layer built from these files.
 
 ## Structure
 
-The Headless Toolkit spans four documentation areas, each in its own folder with an `index.md` (page-by-page link catalog) and a `content.md` (grounded, independently-written summary with per-claim source citations):
+| Folder | Content |
+|---|---|
+| [`_meta/`](_meta/) | [Information architecture](_meta/information-architecture.md), [frontmatter schema](_meta/frontmatter-schema.md), [verification log](_meta/verification-log.md) |
+| [`get-started/`](get-started/) | What headless means, core concepts, why AIforce / Headless 360 |
+| [`hosted-mcp-servers/`](hosted-mcp-servers/) | Salesforce MCP servers, catalogue, setup |
+| [`headless-experience-layer-hxl-beta/`](headless-experience-layer-hxl-beta/) | HXL widgets (Beta) |
+| [`multi-framework-microfrontend/`](multi-framework-microfrontend/) | React / Angular apps on Salesforce, UI Embedding |
+| [`aiforce-claudeforce/`](aiforce-claudeforce/) | AIforce, Claudeforce, Salesforce in Claude |
+| [`business/`](business/) | Licensing, commercial prerequisites, presales checklist |
+| [`scenarios/`](scenarios/) | End-to-end request journeys |
+| [`reference/`](reference/) | Glossary |
 
-| Area | Folder | `llms-*.txt` index | Scope |
-|---|---|---|---|
-| **Get Started** | [`get-started/`](get-started/) | [`llms-headless-three-sixty.txt`](https://developer.salesforce.com/docs/llms-headless-three-sixty.txt) | Entry point: what headless development is, workspace choices, MCP vs. CLI vs. APIs |
-| **Headless Experience Layer (HXL, Beta)** | [`headless-experience-layer-hxl-beta/`](headless-experience-layer-hxl-beta/) | [`llms-headless-experience-layer.txt`](https://developer.salesforce.com/docs/llms-headless-experience-layer.txt) | Beta framework for UI-agnostic, portable agentic app UIs (widgets, components, MCP/Agentforce mapping) |
-| **Multi-Framework + Microfrontend** | [`multi-framework-microfrontend/`](multi-framework-microfrontend/) | [`llms-multi-framework.txt`](https://developer.salesforce.com/docs/llms-multi-framework.txt) | Build on the Platform with React/Angular (Data SDK, UIBundle lifecycle) + Microfrontend UI embedding |
-| **Hosted MCP Servers** | [`hosted-mcp-servers/`](hosted-mcp-servers/) | [`llms-hosted-mcp-servers.txt`](https://developer.salesforce.com/docs/llms-hosted-mcp-servers.txt) | The MCP server catalog (Headless 360, Data 360, SObject*, Tableau, etc.), client setup, troubleshooting |
+Each topic folder has `index.md` (link catalogue to official pages) and `content.md` (independently written summary with per-claim sources). Every file starts with YAML frontmatter (see schema).
 
-Plus one folder outside the `llms-*.txt` structure, for the brand/product hierarchy sitting above these four areas:
+## Rules
 
-| Area | Folder | Scope |
-|---|---|---|
-| **AIforce + Claudeforce** | [`aiforce-claudeforce/`](aiforce-claudeforce/) | The AIforce umbrella (powered by this toolkit), the Salesforce↔Anthropic Claudeforce partnership, and the Salesforce in Claude / Sales Cloud in Claude product line — sourced from `help.salesforce.com`, not `developer.salesforce.com` |
+- Official Salesforce documentation is the primary source; every fact links to it.
+- Our own explanations are marked **(Interpretation)**.
+- `last_verified` in frontmatter shows when facts were last checked. See the [verification log](_meta/verification-log.md).
+- Beta, pilot and announced items are not presented as available commitments to clients.
 
-And a concept primer in `get-started/`:
+## Naming
 
-- [`get-started/why-headless-360.md`](get-started/why-headless-360.md) — synthesis of the official [Headless 360 developer blog post](https://developer.salesforce.com/blogs/2026/05/headless-360-what-it-means-for-developers): the "two kinds of MCP tools" distinction, the governance model, and why this toolkit's four areas (Multi-Framework, HXL, Hosted MCP Servers) are presented as one platform shift.
+Headless 360 was renamed **AIforce** on 4 September 2026 ([release notes](https://help.salesforce.com/s/articleView?id=release-notes.rn_headless360.htm&release=264.0.0&type=5)). Older files and Salesforce product names (e.g. "Headless 360 MCP Server") still use the old name.
 
-## Source
+## History
 
-Developer-doc entries trace back to pages under `developer.salesforce.com/docs/platform/...` and the blog post above; AIforce/Claudeforce entries trace back to `help.salesforce.com` articles. Captured 2026-10-24. Descriptions in the catalog are written independently from page titles/metadata, not copied page bodies — see each linked `.md` URL for full text.
+Initial catalogue captured 2026-10-24 from `developer.salesforce.com/docs/llms.txt` and Salesforce Help. Information architecture v2, verification and new sections added 2026-11-26.
