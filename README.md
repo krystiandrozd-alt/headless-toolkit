@@ -1,44 +1,46 @@
-# Headless Map — Salesforce AIforce / Headless Toolkit knowledge base
+# Headless Map — Salesforce AIforce learning hub (content)
 
-Internal Enxoo learning material on Salesforce AIforce (formerly Headless 360), the Headless Toolkit, Agentforce and related architecture. It serves three groups:
+Internal Enxoo learning material on Salesforce AIforce (formerly Headless 360), Agentforce, MCP and the Headless Toolkit. Written for three groups: **all employees**, **developers** and **presales**.
 
-| Track | For | Start with |
-|---|---|---|
-| **Core** | All employees | [`scenarios/request-journeys.md`](scenarios/request-journeys.md), [`get-started/why-headless-360.md`](get-started/why-headless-360.md), [`reference/glossary.md`](reference/glossary.md) |
-| **Developer** | Developers and technical architects | [`agentforce/`](agentforce/), [`data-360/`](data-360/), [`hosted-mcp-servers/`](hosted-mcp-servers/), [`headless-experience-layer-hxl-beta/`](headless-experience-layer-hxl-beta/), [`multi-framework-microfrontend/`](multi-framework-microfrontend/) |
-| **Presales** | Presales and business leads | [`business/licensing-and-commercial.md`](business/licensing-and-commercial.md), [`business/use-cases-telco.md`](business/use-cases-telco.md), [`aiforce-claudeforce/`](aiforce-claudeforce/), [`scenarios/request-journeys.md`](scenarios/request-journeys.md) |
+**Read it as a website:** https://claude.ai/artifact/JiJAabnaJN6QLqs4cWKTrm — this repository holds the content; the website is built from it.
 
-This repository is the **content layer** (single source of truth). The interactive Headless Map page is the presentation layer built from these files.
+## Where to start
 
-## Structure
-
-| Folder | Content |
+| You are | Start with |
 |---|---|
-| [`_meta/`](_meta/) | [Information architecture](_meta/information-architecture.md), [frontmatter schema](_meta/frontmatter-schema.md), [verification log](_meta/verification-log.md) |
-| [`get-started/`](get-started/) | What headless means, core concepts, why AIforce / Headless 360 |
-| [`hosted-mcp-servers/`](hosted-mcp-servers/) | Salesforce MCP servers, catalogue, setup |
-| [`headless-experience-layer-hxl-beta/`](headless-experience-layer-hxl-beta/) | HXL widgets (Beta) |
-| [`multi-framework-microfrontend/`](multi-framework-microfrontend/) | React / Angular apps on Salesforce, UI Embedding |
-| [`aiforce-claudeforce/`](aiforce-claudeforce/) | AIforce, Claudeforce, Salesforce in Claude |
-| [`agentforce/`](agentforce/) | Agents, subagents, actions, Agent Script, testing, APIs |
-| [`data-360/`](data-360/) | Data 360, grounding, Data 360 MCP |
-| [`business/`](business/) | Licensing and commercial prerequisites, telco use cases (shipped vs proposed) |
-| [`scenarios/`](scenarios/) | End-to-end request journeys |
-| [`reference/`](reference/) | Glossary |
+| Any Enxoo employee | [Three example journeys](03-how-it-works-together/three-example-journeys.md) → [Why Salesforce went headless](01-big-picture/why-salesforce-went-headless.md) → [Glossary](06-reference/glossary.md) |
+| Developer | [MCP servers](02-building-blocks/2.5-connecting-ai-to-salesforce/mcp-servers.md) → [Agentforce](02-building-blocks/2.4-ai-agents/agentforce-agents.md) → [HXL widgets](02-building-blocks/2.6-screens-and-apps/hxl-widgets-build-once-show-anywhere.md) |
+| Presales | [Telco use cases](05-business-view/telco-use-cases.md) → [Licensing — what a client needs](05-business-view/licensing-and-what-clients-need.md) → [AIforce and the Claude partnership](01-big-picture/aiforce-and-the-claude-partnership.md) |
 
-Each topic folder has `index.md` (link catalogue to official pages) and `content.md` (independently written summary with per-claim sources). Every file starts with YAML frontmatter (see schema).
+## Folders
+
+The numbers follow the learning order.
+
+| Folder | What is inside |
+|---|---|
+| [`00-start-here`](00-start-here) | How the hub is organised; rules for writing content |
+| [`01-big-picture`](01-big-picture) | What headless means; why Salesforce went headless; AIforce and the Claude partnership |
+| [`02-building-blocks`](02-building-blocks) | The pieces, layer by layer: |
+| ↳ [`2.1-data-and-context`](02-building-blocks/2.1-data-and-context) | Data 360 and grounding |
+| ↳ [`2.4-ai-agents`](02-building-blocks/2.4-ai-agents) | Agentforce agents |
+| ↳ [`2.5-connecting-ai-to-salesforce`](02-building-blocks/2.5-connecting-ai-to-salesforce) | MCP servers |
+| ↳ [`2.6-screens-and-apps`](02-building-blocks/2.6-screens-and-apps) | HXL widgets; React and Angular apps |
+| [`03-how-it-works-together`](03-how-it-works-together) | Three example journeys, start to finish |
+| [`05-business-view`](05-business-view) | Telco use cases; licensing; Salesforce in Claude skills |
+| [`06-reference`](06-reference) | Glossary; what we checked and when |
+| [`tools/hub-builder`](tools/hub-builder) | Builds the website from these files |
+
+Planned, not yet written: 2.2 Security and trust, 2.3 Business logic, 2.7 AI Harness, 04 Building it.
+
+Files ending in **`-official-pages.md`** are link lists to the official Salesforce documentation for the topic next to them.
 
 ## Rules
 
 - Official Salesforce documentation is the primary source; every fact links to it.
 - Our own explanations are marked **(Interpretation)**.
-- `last_verified` in frontmatter shows when facts were last checked. See the [verification log](_meta/verification-log.md).
+- Each file starts with a short metadata block (status, level, groups, date last checked). See [rules for writing content](00-start-here/rules-for-writing-content.md).
 - Beta, pilot and announced items are not presented as available commitments to clients.
 
 ## Naming
 
-Headless 360 was renamed **AIforce** on 4 September 2026 ([release notes](https://help.salesforce.com/s/articleView?id=release-notes.rn_headless360.htm&release=264.0.0&type=5)). Older files and Salesforce product names (e.g. "Headless 360 MCP Server") still use the old name.
-
-## History
-
-Initial catalogue captured 2026-10-24 from `developer.salesforce.com/docs/llms.txt` and Salesforce Help. Information architecture v2, verification and new sections added 2026-11-26.
+Headless 360 was renamed **AIforce** on 4 September 2026 ([release notes](https://help.salesforce.com/s/articleView?id=release-notes.rn_headless360.htm&release=264.0.0&type=5)). Some Salesforce product names still use the old name, for example "Headless 360 MCP Server".
