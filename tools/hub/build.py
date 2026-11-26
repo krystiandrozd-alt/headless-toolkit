@@ -17,12 +17,14 @@ def split(s):
 
 docs = {}
 path2id = {}
+titles = {}
 for p, s in files.items():
     if p == 'README.md': continue
     fm, body = split(s)
     if not fm: continue
     docs[fm['id']] = dict(fm=fm, body=body, path=p)
     path2id[p] = fm['id']
+    titles[fm['id']] = re.sub(r' — .*','', str(fm.get('title', fm['id'])))
 
 def link_fix(html_s, cur_path):
     def rep(m):
@@ -31,7 +33,7 @@ def link_fix(html_s, cur_path):
             return f'href="{href}" target="_blank" rel="noopener"'
         target = os.path.normpath(os.path.join(os.path.dirname(cur_path), href.split('#')[0]))
         if target in path2id:
-            return f'href="#{path2id[target]}"'
+            return f'href="#{path2id[target]}" data-title="{path2id[target]}"'
         # folder link -> content.md
         for cand in (os.path.join(target, 'content.md'),):
             if cand in path2id: return f'href="#{path2id[cand]}"'
@@ -42,6 +44,12 @@ def render(md_text, cur_path):
     md_text = re.sub(r'^# .*\n', '', md_text, count=1)  # title rendered separately
     h = markdown.markdown(md_text, extensions=['tables', 'fenced_code', 'sane_lists'])
     h = link_fix(h, cur_path)
+    def nice(m):
+        tid = m.group(2)
+        t = titles.get(tid, tid)
+        return f'<a href="#{tid}">{html.escape(t)}</a>'
+    h = re.sub(r'<a href="#([^"]+)" data-title="([^"]+)"><code>[^<]*</code></a>', nice, h)
+    h = h.replace(' data-title="', ' data-t="')
     h = h.replace('<strong>(Interpretation)</strong>', '<span class="tag-inf">Interpretation</span>')
     h = re.sub(r'\(Interpretation([^)]*)\)', r'<span class="tag-inf">Interpretation\1</span>', h)
     h = h.replace('<table>', '<div class="tbl"><table>').replace('</table>', '</table></div>')
