@@ -1,0 +1,127 @@
+<template>
+    <lightning-card title="Licenses" icon-name="custom:custom67">
+        <div slot="actions">
+            <lightning-button label="Refresh" onclick={load} disabled={isSaving}></lightning-button>
+            <lightning-button
+                class="slds-m-left_x-small"
+                label="New license"
+                variant="brand"
+                onclick={openCreate}
+                disabled={isSaving}
+            ></lightning-button>
+        </div>
+
+        <div class="slds-p-around_medium">
+            <template lwc:if={isLoading}>
+                <lightning-spinner alternative-text="Loading licenses"></lightning-spinner>
+            </template>
+
+            <template lwc:if={issuedKey}>
+                <div class="slds-scoped-notification slds-media slds-media_center slds-theme_success slds-m-bottom_medium" role="status">
+                    <div class="slds-media__body">
+                        <p class="slds-text-heading_small">New license key</p>
+                        <p class="slds-m-top_x-small key-text">{issuedKey}</p>
+                        <lightning-button
+                            class="slds-m-top_x-small"
+                            label="Copy key"
+                            onclick={copyIssuedKey}
+                        ></lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <template lwc:if={showCreate}>
+                <div class="slds-box slds-m-bottom_medium">
+                    <h2 class="slds-text-heading_small slds-m-bottom_small">Create a license</h2>
+                    <lightning-input
+                        label="Customer name"
+                        value={customerName}
+                        required
+                        onchange={handleCustomerName}
+                    ></lightning-input>
+                    <lightning-record-picker
+                        class="slds-m-top_small"
+                        label="Account"
+                        object-api-name="Account"
+                        placeholder="Search accounts"
+                        onchange={handleAccountChange}
+                    ></lightning-record-picker>
+                    <lightning-input
+                        class="slds-m-top_small"
+                        label="Product code"
+                        value={productCode}
+                        required
+                        field-level-help="1-40 characters: letters, numbers, dot, underscore, or hyphen."
+                        onchange={handleProductCode}
+                    ></lightning-input>
+                    <lightning-input
+                        class="slds-m-top_small"
+                        type="number"
+                        label="Seats"
+                        value={seatCount}
+                        min="1"
+                        max="100000"
+                        required
+                        onchange={handleSeatCount}
+                    ></lightning-input>
+                    <lightning-input
+                        class="slds-m-top_small"
+                        type="date"
+                        label="Expiry"
+                        value={expiryDate}
+                        min={today}
+                        required
+                        onchange={handleExpiryDate}
+                    ></lightning-input>
+                    <div class="slds-m-top_medium">
+                        <lightning-button label="Cancel" onclick={cancelCreate} disabled={isSaving}></lightning-button>
+                        <lightning-button
+                            class="slds-m-left_x-small"
+                            label="Create"
+                            variant="brand"
+                            onclick={saveCreate}
+                            disabled={isSaving}
+                        ></lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <template lwc:if={showExtend}>
+                <div class="slds-box slds-m-bottom_medium">
+                    <h2 class="slds-text-heading_small slds-m-bottom_small">Extend license</h2>
+                    <p class="slds-m-bottom_small">Extending re-signs the key. The previous key will no longer validate.</p>
+                    <lightning-input
+                        type="date"
+                        label="New expiry"
+                        value={extendDate}
+                        min={today}
+                        required
+                        onchange={handleExtendDate}
+                    ></lightning-input>
+                    <div class="slds-m-top_medium">
+                        <lightning-button label="Cancel" onclick={cancelExtend} disabled={isSaving}></lightning-button>
+                        <lightning-button
+                            class="slds-m-left_x-small"
+                            label="Extend"
+                            variant="brand"
+                            onclick={saveExtend}
+                            disabled={isSaving}
+                        ></lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <lightning-datatable
+                key-field="licenseId"
+                data={licenses}
+                columns={columns}
+                hide-checkbox-column
+                onrowaction={handleRowAction}
+            ></lightning-datatable>
+
+            <template lwc:if={isEmpty}>
+                <p class="slds-m-top_medium">No licenses yet. Create one to issue a signed key.</p>
+            </template>
+        </div>
+    </lightning-card>
+</template>

@@ -12,6 +12,13 @@ Internal Enxoo learning material on Salesforce AIforce (formerly Headless 360), 
 | Developer | [MCP servers](02-building-blocks/2.5-connecting-ai-to-salesforce/mcp-servers.md) → [Agentforce](02-building-blocks/2.4-ai-agents/agentforce-agents.md) → [HXL widgets](02-building-blocks/2.6-screens-and-apps/hxl-widgets-build-once-show-anywhere.md) |
 | Presales | [Telco use cases](05-business-view/telco-use-cases.md) → [Licensing — what a client needs](05-business-view/licensing-and-what-clients-need.md) → [AIforce and the Claude partnership](01-big-picture/aiforce-and-the-claude-partnership.md) |
 
+## Structure
+
+| Path | What it is |
+|---|---|
+| [`license-app`](license-app/README.md) | Salesforce DX package: signed license keys, validation, an admin UI, and an Agentforce agent |
+| Learning-hub folders | The numbered content folders in the table below |
+
 ## Folders
 
 The numbers follow the learning order.
@@ -29,6 +36,7 @@ The numbers follow the learning order.
 | [`05-business-view`](05-business-view) | Telco use cases; licensing; Salesforce in Claude skills |
 | [`06-reference`](06-reference) | Glossary; what we checked and when |
 | [`tools/hub-builder`](tools/hub-builder) | Builds the website from these files |
+| [`license-app`](license-app/README.md) | Salesforce DX license manager (keys, validation, admin UI, agent) |
 
 Planned, not yet written: 2.2 Security and trust, 2.3 Business logic, 2.7 AI Harness, 04 Building it.
 

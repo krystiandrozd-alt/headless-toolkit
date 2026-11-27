@@ -1,0 +1,161 @@
+# License Assistant
+# Validates a license key deterministically, and looks a license up from the conversation.
+
+config:
+   developer_name: "License_Assistant"
+   agent_label: "License Assistant"
+   agent_type: "AgentforceEmployeeAgent"
+   description: "Validates product license keys and looks up licenses for an administrator."
+
+variables:
+   license_key: mutable string = ""
+      description: "License key supplied by the user"
+
+   installation_id: mutable string = ""
+      description: "Optional installation id used when checking seats"
+
+   lookup_customer: mutable string = ""
+      description: "Customer name to search for"
+
+   validation_status: mutable string = ""
+      description: "Latest validation status returned by Apex"
+
+   validation_message: mutable string = ""
+      description: "Latest validation message returned by Apex"
+
+   lookup_summary: mutable string = ""
+      description: "Latest license lookup summary"
+
+system:
+   messages:
+      welcome: "I can validate a license key or look up a license. What do you need?"
+      error: "I could not complete that license request. Check the key and try again."
+   instructions: "You are a license administrator. Be concise. Never invent a license status, expiry, or seat count. Report only what the license actions return."
+
+language:
+   default_locale: "en_US"
+
+start_agent license_router:
+   description: "Route the user to license validation or license lookup"
+   reasoning:
+      instructions:->
+         | Ask what they need when it is unclear.
+         | Send a request to check a license key to validation.
+         | Send a request to find a license by customer to lookup.
+      actions:
+         go_to_validate: @utils.transition to @subagent.license_validation
+            description: "The user wants to validate a license key"
+         go_to_lookup: @utils.transition to @subagent.license_lookup
+            description: "The user wants to look up a license by customer or key"
+
+subagent license_validation:
+   description: "Validate a license key and explain the status"
+   actions:
+      validate_license:
+         description: "Check the key signature, expiry, revocation, and remaining seats."
+         label: "Validate License"
+         inputs:
+            licenseKey: string
+               description: "The full license key to validate"
+               is_required: True
+            installationId: string
+               description: "Optional installation id used for the seat check"
+               is_required: False
+            consumeSeat: boolean
+               description: "Always false. This agent checks seats and does not consume one."
+               is_required: True
+         outputs:
+            status: string
+               description: "VALID, EXPIRED, REVOKED, TAMPERED, OVER_SEATS, NOT_FOUND, INVALID, CLAIM_MISMATCH, or MISCONFIGURED"
+            isValid: boolean
+               description: "True only when the status is VALID"
+            message: string
+               description: "Plain-language result from Apex"
+            productCode: string
+               description: "Product code when the key matched a license"
+            customerName: string
+               description: "Customer name when the key matched a license"
+            seatsRemaining: string
+               description: "Seats still available"
+            expiryDate: string
+               description: "Expiry date, yyyy-MM-dd"
+         target: "apex://LicenseValidationAction"
+
+   reasoning:
+      instructions:->
+         if @variables.license_key != "":
+            run @actions.validate_license
+               with licenseKey=@variables.license_key
+               with installationId=@variables.installation_id
+               with consumeSeat=False
+               set @variables.validation_status = @outputs.status
+               set @variables.validation_message = @outputs.message
+         | Help the user validate a license key.
+         | If you do not yet have the key, ask for it, then call {!@actions.validate_license_tool}.
+         | Do not consume a seat.
+         | When a result is present, explain {!@variables.validation_status} using only {!@variables.validation_message}.
+         | Do not invent a status. If the status is MISCONFIGURED, say the signing key is not set up.
+      actions:
+         capture_key: @utils.setVariables
+            description: "Save the license key and optional installation id the user provides"
+            with license_key=...
+            with installation_id=...
+         validate_license_tool: @actions.validate_license
+            description: "Validate the license key the user just provided"
+            with licenseKey=...
+            with installationId=...
+            with consumeSeat=False
+            set @variables.validation_status = @outputs.status
+            set @variables.validation_message = @outputs.message
+
+subagent license_lookup:
+   description: "Look up a license by customer name or by key"
+   actions:
+      lookup_license:
+         description: "Find licenses by customer name, or look up one key."
+         label: "Look Up License"
+         inputs:
+            customerName: string
+               description: "Customer name to search for"
+               is_required: False
+            licenseKey: string
+               description: "Full license key to look up"
+               is_required: False
+         outputs:
+            status: string
+               description: "FOUND, NOT_FOUND, INVALID, or a validation status"
+            matchCount: string
+               description: "How many licenses were found"
+            summary: string
+               description: "Plain-language summary. Keys are masked."
+         target: "apex://LicenseLookupAction"
+
+   reasoning:
+      instructions:->
+         if @variables.license_key != "":
+            run @actions.lookup_license
+               with licenseKey=@variables.license_key
+               with customerName=""
+               set @variables.validation_status = @outputs.status
+               set @variables.lookup_summary = @outputs.summary
+         if @variables.lookup_customer != "" and @variables.license_key == "":
+            run @actions.lookup_license
+               with customerName=@variables.lookup_customer
+               with licenseKey=""
+               set @variables.validation_status = @outputs.status
+               set @variables.lookup_summary = @outputs.summary
+         | Help the user find a license.
+         | If you do not yet have a customer name or a key, ask which they have, then call {!@actions.lookup_license_tool}.
+         | Read the result back from {!@variables.lookup_summary}.
+         | Never reveal more of a license key than the summary already shows.
+      actions:
+         capture_lookup: @utils.setVariables
+            description: "Save the customer name or license key the user wants to find"
+            with lookup_customer=...
+            with license_key=...
+         lookup_license_tool: @actions.lookup_license
+            description: "Look up licenses from what the user just said"
+            with customerName=...
+            with licenseKey=...
+            set @variables.validation_status = @outputs.status
+            set @variables.lookup_summary = @outputs.summary

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Status_Display__c</fullName>
+    <description>Revoked, Expired, or Active. Expired is derived from the expiry date.</description>
+    <externalId>false</externalId>
+    <formula>IF(ISPICKVAL(Status__c, &quot;Revoked&quot;), &quot;Revoked&quot;, IF(Expiry_Date__c &lt; TODAY(), &quot;Expired&quot;, &quot;Active&quot;))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Status Display</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

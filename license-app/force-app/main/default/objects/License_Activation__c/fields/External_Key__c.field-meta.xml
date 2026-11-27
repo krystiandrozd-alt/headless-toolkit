@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>External_Key__c</fullName>
+    <caseSensitive>true</caseSensitive>
+    <description>License id plus installation id, so the same installation cannot take two seats.</description>
+    <externalId>true</externalId>
+    <label>External Key</label>
+    <length>120</length>
+    <required>true</required>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

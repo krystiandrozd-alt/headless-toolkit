@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>License__c</fullName>
+    <description>License this installation consumes a seat on.</description>
+    <label>License</label>
+    <referenceTo>License__c</referenceTo>
+    <relationshipLabel>Activations</relationshipLabel>
+    <relationshipName>Activations</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>
