@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>HMAC signing secret for license keys. Apex reads the Default record. The type is protected so a namespaced managed package hides it from subscriber orgs. Never commit a real secret.</description>
+    <description>HMAC signing secret for license keys. Apex reads the Default record. Visibility is Public so this unpackaged project can deploy outside a developer, sandbox, or scratch org. Switch to Protected only when packaging a managed 2GP. Never commit a real secret.</description>
     <label>License Signing Config</label>
     <pluralLabel>License Signing Configs</pluralLabel>
-    <visibility>Protected</visibility>
+    <visibility>Public</visibility>
 </CustomObject>

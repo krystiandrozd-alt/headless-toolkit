@@ -46,7 +46,9 @@ public with sharing class LicenseValidationService {
         public CheckResult mark(String statusValue, String messageValue) {
             this.status = statusValue;
             this.message = messageValue;
-            this.valid = statusValue == VALID;
+            // Apex identifiers are case-insensitive, so the Boolean field `valid`
+            // hides the outer String constant VALID. Compare the literal.
+            this.valid = 'VALID'.equals(statusValue);
             return this;
         }
     }

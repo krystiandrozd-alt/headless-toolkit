@@ -1,8 +1,9 @@
 /**
  * Issues and checks HMAC-SHA256 license keys.
  *
- * The signing secret is read from protected custom metadata
+ * The signing secret is read from custom metadata
  * (License_Signing_Config__mdt.Default.Signing_Key__c). It is never hardcoded.
+ * The type is Public in this unpackaged project. Use Protected only in a managed 2GP.
  * LIC1.{base64url(payload)}.{base64url(hmac)} binds customer, product, seats, expiry, and nonce.
  * LIC2 adds the tier code and is used when a license is issued from the catalog.
  * LIC1 keys still parse and validate.
@@ -132,7 +133,7 @@ public with sharing class LicenseKeyService {
         }
         if (!isUsableSecret(candidate)) {
             throw new ConfigurationException(
-                'The license signing key is not configured. Create a protected License Signing Config record named Default and set Signing Key to at least 32 characters. Do not use the placeholder REPLACE_IN_ORG.'
+                'The license signing key is not configured. Create a License Signing Config record named Default and set Signing Key to at least 32 characters. Do not use the placeholder REPLACE_IN_ORG.'
             );
         }
         return candidate.trim();

@@ -25,9 +25,11 @@ The admin screen is a Lightning web component. Headless Experience Layer widgets
 
 The secret is **not** in Apex. `LicenseKeyService` reads `License_Signing_Config__mdt.Default.Signing_Key__c`.
 
-The custom metadata type is **Protected**. In a namespaced managed package, only Apex in that namespace can read it. Outside a managed package Salesforce treats protected custom metadata as public, so any admin with Customize Application can open the record. Do not put a production secret in git. The package deploy does not create the record, so a later deploy will not overwrite a key you set in the org.
+The custom metadata type is **Public**. Salesforce only allows `Protected` visibility for a custom metadata type in a developer, sandbox, or scratch org, so this unpackaged project cannot deploy as Protected. Do not put a production secret in git. The package deploy does not create the record, so a later deploy will not overwrite a key you set in the org. Anyone with Customize Application can read a Public custom metadata record; limit who has that permission.
 
-Named Credentials are a poor fit here. Apex cannot read a Named Credential secret into `Crypto.generateMac`. The platform only substitutes `{!$Credential.Password}` on an outbound callout. Protected custom metadata is the store this package uses. For a real multi-customer package, ship the protected type in a managed 2GP and set each subscriber's key in the packaging org before upload, or switch the type to Public with a subscriber-controlled field so each subscriber creates their own `Default` record.
+To hide the secret, package this app as a managed 2GP and then set the type visibility to **Protected** (namespace-protected) in that packaging org. Do not mark the record `<protected>true</protected>` in an unpackaged deploy.
+
+Named Credentials are a poor fit here. Apex cannot read a Named Credential secret into `Crypto.generateMac`. The platform only substitutes `{!$Credential.Password}` on an outbound callout.
 
 ### Set the key
 
@@ -152,6 +154,8 @@ sf agent publish authoring-bundle --api-name License_Assistant
 ```
 
 The agent runs as the signed-in employee, so that user needs **License Admin**.
+
+The source file is `aiAuthoringBundles/License_Assistant/License_Assistant.agent`, next to `License_Assistant.bundle-meta.xml`. That unversioned name is the draft bundle. After a publish, the org also has a locked snapshot named `License_Assistant_1`. A deploy log that says `License_Assistant_1.agent` was not found locally is that snapshot, not a missing source file. Do not rename the draft to `License_Assistant_1`.
 
 ## Usage
 
