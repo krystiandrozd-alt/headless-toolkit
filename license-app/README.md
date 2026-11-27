@@ -8,7 +8,10 @@ The admin screen is a Lightning web component. Headless Experience Layer widgets
 
 | Piece | Role |
 |---|---|
-| `License__c` | Customer, optional Account, product, seats, expiry, status, and the signed key |
+| `License__c` | Customer, optional Account, product, tier, seats, expiry, features, credit balance, and the signed key |
+| `License_Offering__c` / `License_Rule__c` | Tier and add-on catalog, plus requires/excludes rules |
+| `License_Add_On__c` | Add-on attached to a base license, with its own seats and expiry when set |
+| `License_Credit_Entry__c` | Credit ledger. Amounts are positive. The entry type says add or consume |
 | `License_Activation__c` | One row per installation that has consumed a seat |
 | `LicenseKeyService` | Builds and checks the HMAC |
 | `LicenseValidationService` | Returns one status: valid, expired, revoked, tampered, over seats, and the other results below |
@@ -53,19 +56,72 @@ Tests never read the org record. They inject a fixture through `LicenseKeyServic
 
 ```text
 LIC1.{base64url(payload)}.{base64url(hmac-sha256)}
+LIC2.{base64url(payload)}.{base64url(hmac-sha256)}
 ```
 
-The payload is ASCII, fields separated by `|`:
+The payload is ASCII, fields separated by `|`.
+
+LIC1, used when a license is issued without a tier:
 
 ```text
 1|{accountToken}|{productCode}|{seatCount}|{yyyy-MM-dd}|{nonce}
 ```
 
+LIC2, used when a license is issued from a tier. The prefix has to match the payload version:
+
+```text
+2|{accountToken}|{productCode}|{tierCode}|{seatCount}|{yyyy-MM-dd}|{nonce}
+```
+
 `accountToken` is the 18-character Account Id when an Account is set, otherwise `n:` plus 32 hex characters of SHA-256 over the normalized customer name. The nonce is 16 random bytes, hex-encoded. The HMAC is SHA-256 over the payload, keyed with the signing secret. Comparison of the signature does not stop at the first differing byte.
 
-The signature covers the customer token, product, seat count, and expiry. Seat usage and revocation are stored on the record, so they can change without a new key. **Extend** changes the expiry, so it re-signs the key. The previous key no longer matches (`CLAIM_MISMATCH`).
+LIC1 keys still validate. A LIC2 key also signs the tier code, which is at most 20 characters so the key stays within 255 characters. Seat usage, revocation, add-ons, and the credit balance are stored on the record, so they can change without a new key. **Extend** changes the expiry and re-signs in the same version. The previous key no longer matches (`CLAIM_MISMATCH`). Extend is refused while a dependency is unmet.
 
 A key is valid through the expiry date, inclusive.
+
+## Catalog, add-ons, and dependencies
+
+Offerings are records, so an administrator can change them without a metadata deploy. **Sample catalog** on the Licenses tab inserts WidgetPro Starter, Pro, and Enterprise, a Support Plan tier, and the SSO, Audit, and Legacy Auth add-ons, plus their rules. Running it again does not duplicate them.
+
+| Offering | What it sets |
+|---|---|
+| Tier | Default seats, duration, feature codes, and included credits. Issuing copies those onto the license and signs a LIC2 key |
+| Add-on | Optional product attached to a base license. It can have its own seats and expiry. Its features are added to the entitlement set. Included credits are granted once |
+
+Rules live on `License_Rule__c`:
+
+- Several **Requires** rules of the same target type are alternatives. `WidgetPro-SSO` requires tier `WidgetPro-Pro` or `WidgetPro-Enterprise`.
+- Requires rules of different types must all pass. Enterprise requires an active `SupportPlan` product license for the same customer.
+- Any matching **Excludes** rule blocks the combination. SSO and Legacy Auth exclude each other.
+
+The same customer is an Account match or the same customer name. Revoked and expired licenses do not satisfy a requirement. Create, attach, and extend enforce the rules. Validation returns `DEPENDENCY_UNMET` and lists the gaps when the key is otherwise authentic and in date.
+
+## Credits
+
+Each license has `Credit_Balance__c`. Tier and add-on credits are granted once, with idempotency keys `included:{licenseId}` and `addon:{licenseId}:{code}`. Top-ups and consumption append `License_Credit_Entry__c` rows. The balance is never negative. Repeating an idempotency key with the same type and amount returns `IDEMPOTENT_REPLAY` and does not move the balance. The same key with a different amount or type returns `IDEMPOTENCY_CONFLICT`.
+
+```http
+POST /services/apexrest/license/v1/credits/consume
+POST /services/apexrest/license/v1/credits/topup
+```
+
+```json
+{"licenseKey":"LIC2....","amount":10,"idempotencyKey":"evt-1","note":"api call"}
+```
+
+Both require the **Manage License Changes** custom permission (included in License Admin). Without it the HTTP status is 403 and the balance does not change. A completed check, including `INSUFFICIENT_CREDITS`, is HTTP 200 and the business status is in the JSON.
+
+```http
+POST /services/apexrest/license/v1/entitlements/check
+```
+
+```json
+{"licenseKey":"LIC2....","featureCode":"sso"}
+```
+
+`enabled` is true only when the license status is `VALID` and the feature is on the tier or an active, unexpired add-on. Validate also returns `tierCode`, `keyVersion`, `features`, `addOns`, `creditBalance`, `dependenciesMet`, and `unmetDependencies`.
+
+The invocable equivalents are `LicenseCreditAction` (`balance`, `consume`, `topup`), `LicenseEntitlementAction`, `LicenseDependencyAction`, and `LicenseCatalogAction`.
 
 ## Deploy
 
@@ -85,7 +141,7 @@ Open **License Admin** from the App Launcher. The **Licenses** tab lists keys, a
 Run the Apex tests:
 
 ```bash
-sf apex run test --class-names LicenseServiceTest --result-format human --wait 10
+sf apex run test --class-names LicenseServiceTest,LicenseCatalogTest --result-format human --wait 10
 ```
 
 Agentforce has to be enabled before the agent bundle will publish. After deploy, validate and publish it from this folder:
@@ -101,7 +157,7 @@ The agent runs as the signed-in employee, so that user needs **License Admin**.
 
 ### Admin UI
 
-Create a license with a customer name and, optionally, an Account. Product codes are 1–40 characters: letters, numbers, `.`, `_`, or `-`. Seats are 1–100000. The new key is shown once at the top of the page and stored on the record. **Copy key** on a row copies the full key. **Revoke** rejects later checks immediately. **Extend** picks a new expiry and shows the re-signed key.
+Create a license with a customer name and, optionally, an Account. Pick a tier to fill seats, expiry, features, and credits, and select add-ons. A dependency warning shows before you save. Leaving the tier blank still issues a LIC1 key. Product codes are 1–40 characters: letters, numbers, `.`, `_`, or `-`. Seats are 1–100000. The new key is shown once at the top of the page and stored on the record. **Copy key** copies the full key. **Credits** shows the balance, a top-up, and the ledger. **Add-on** attaches another offering and refuses it when a rule fails. **Revoke** rejects later checks immediately. **Extend** picks a new expiry and shows the re-signed key.
 
 ### Validation API
 
@@ -127,6 +183,7 @@ The HTTP status is 200 when the check ran. The license result is the JSON `statu
 | `TAMPERED` | The signature does not match the payload |
 | `CLAIM_MISMATCH` | The signature is valid, but the signed claims no longer match the stored license (for example the key was extended) |
 | `OVER_SEATS` | No seat is free for this installation |
+| `DEPENDENCY_UNMET` | The key is authentic and in date, but a required license, tier, or add-on is missing, or an excluded one is present |
 | `NOT_FOUND` | The signature is valid and the nonce is not on a license |
 | `INVALID` | The key is blank or not shaped like `LIC1.payload.signature` |
 | `MISCONFIGURED` | The signing key record is missing or still a placeholder |
@@ -143,13 +200,27 @@ Checks run in that order: configuration, shape, signature, lookup, claims, revoc
 
 Publish the bundle with the commands above, then open it from Agentforce Studio.
 
+### Agent topics
+
+`License_Assistant` starts at `license_router` and moves to one topic. Deterministic calls sit under `->`. The lines that talk to the user sit under `|`. There is no `else if`.
+
+| Topic | What it does |
+|---|---|
+| `license_validation` | Runs `Validate License` when a key is already stored. Seat consumption is bound to false |
+| `license_lookup` | Looks up by key or customer name. Keys in the summary are masked |
+| `license_recommendation` | Lists tiers and add-ons and explains an upgrade. **Issue License** is available only when `caller_is_admin` is true, and it asks the user to confirm |
+| `license_dependencies` | Runs the dependency check whenever a key is known |
+| `license_credits` | Reads the balance whenever a key is known. Consume and top-up are available only for an administrator and require confirmation |
+
+`caller_is_admin` comes from `LicenseAdminGateAction`, which checks **Manage License Changes**. The Apex entry points check that permission again, so hiding the tool is not the only gate. The admin Lightning page tops up credits directly and does not go through the agent.
+
 ## Project layout
 
 ```text
 license-app/
   config/examples/     Example signing-key record. Not deployed by sf project deploy start.
   force-app/main/default/
-    objects/           License__c, License_Activation__c, License_Signing_Config__mdt
+    objects/           License__c, offerings, rules, add-ons, credit entries, activations, signing config
     classes/           Services, invocable actions, REST, admin controller, tests
     lwc/licenseAdmin/  Admin UI
     aiAuthoringBundles/License_Assistant/

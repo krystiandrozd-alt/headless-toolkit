@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>A sellable tier or add-on. Admins maintain these records; issuing a license copies the defaults onto the license.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <externalSharingModel>Private</externalSharingModel>
+    <label>License Offering</label>
+    <nameField>
+        <label>Offering Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>License Offerings</pluralLabel>
+    <sharingModel>Private</sharingModel>
+</CustomObject>

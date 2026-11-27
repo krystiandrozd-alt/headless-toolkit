@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Key_Version__c</fullName>
+    <description>LIC1 or LIC2. Extend re-signs in the same version.</description>
+    <externalId>false</externalId>
+    <label>Key Version</label>
+    <length>4</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

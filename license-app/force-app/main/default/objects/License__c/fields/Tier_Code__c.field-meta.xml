@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Tier_Code__c</fullName>
+    <description>Offering code of the tier, when this license was issued from the catalog. LIC2 keys sign this value. LIC1 keys leave it blank.</description>
+    <externalId>false</externalId>
+    <label>Tier Code</label>
+    <length>20</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

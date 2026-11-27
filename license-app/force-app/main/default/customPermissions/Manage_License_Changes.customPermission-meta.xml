@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Issue licenses and change credit balances. The License Admin permission set grants this. The agent will not offer those actions without it, and the Apex entry points check it again.</description>
+    <isLicensed>false</isLicensed>
+    <label>Manage License Changes</label>
+</CustomPermission>

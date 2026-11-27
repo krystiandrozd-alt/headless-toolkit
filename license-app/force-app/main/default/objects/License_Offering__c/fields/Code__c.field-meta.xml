@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Code__c</fullName>
+    <caseSensitive>true</caseSensitive>
+    <description>Stable code, for example WidgetPro-Pro or WidgetPro-SSO. Tier codes are limited to 20 characters because they are signed into LIC2 keys.</description>
+    <externalId>true</externalId>
+    <label>Code</label>
+    <length>40</length>
+    <required>true</required>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

@@ -3,11 +3,13 @@
  *
  * The signing secret is read from protected custom metadata
  * (License_Signing_Config__mdt.Default.Signing_Key__c). It is never hardcoded.
- * A key is LIC1.{base64url(payload)}.{base64url(hmac)}. The payload binds the
- * customer token, product, seat count, expiry, and a random nonce.
+ * LIC1.{base64url(payload)}.{base64url(hmac)} binds customer, product, seats, expiry, and nonce.
+ * LIC2 adds the tier code and is used when a license is issued from the catalog.
+ * LIC1 keys still parse and validate.
  */
 public with sharing class LicenseKeyService {
     public static final String KEY_PREFIX = 'LIC1';
+    public static final String KEY_PREFIX_V2 = 'LIC2';
     public static final String PLACEHOLDER = 'REPLACE_IN_ORG';
     public static final Integer MIN_SECRET_LENGTH = 32;
 
@@ -26,6 +28,7 @@ public with sharing class LicenseKeyService {
     public class Claims {
         public String accountToken;
         public String productCode;
+        public String tierCode;
         public Integer seatCount;
         public Date expiryDate;
         public String nonce;
@@ -55,6 +58,7 @@ public with sharing class LicenseKeyService {
         Claims claims = new Claims();
         claims.accountToken = license.Account_Token__c;
         claims.productCode = license.Product_Code__c;
+        claims.tierCode = license.Key_Version__c == KEY_PREFIX_V2 ? license.Tier_Code__c : null;
         claims.seatCount = Integer.valueOf(license.Seat_Count__c);
         claims.expiryDate = license.Expiry_Date__c;
         claims.nonce = license.Nonce__c;
@@ -63,7 +67,8 @@ public with sharing class LicenseKeyService {
 
     public static String sign(Claims claims) {
         String payload = canonical(claims);
-        String key = KEY_PREFIX + '.' + base64UrlEncode(Blob.valueOf(payload)) + '.' + base64UrlEncode(mac(payload));
+        String prefix = String.isBlank(claims.tierCode) ? KEY_PREFIX : KEY_PREFIX_V2;
+        String key = prefix + '.' + base64UrlEncode(Blob.valueOf(payload)) + '.' + base64UrlEncode(mac(payload));
         if (key.length() > 255) {
             throw new LicenseException('The signed license key is too long to store.');
         }
@@ -77,10 +82,16 @@ public with sharing class LicenseKeyService {
             return parsed;
         }
         List<String> parts = licenseKey.trim().split('\\.');
-        if (parts.size() != 3 || parts[0] != KEY_PREFIX || String.isBlank(parts[1]) || String.isBlank(parts[2])) {
+        if (
+            parts.size() != 3 ||
+            (parts[0] != KEY_PREFIX && parts[0] != KEY_PREFIX_V2) ||
+            String.isBlank(parts[1]) ||
+            String.isBlank(parts[2])
+        ) {
             parsed.parseStatus = ParseStatus.INVALID;
             return parsed;
         }
+        String prefix = parts[0];
 
         String secret = getSigningKey();
         Blob payloadBlob = base64UrlDecode(parts[1]);
@@ -97,7 +108,7 @@ public with sharing class LicenseKeyService {
         }
 
         try {
-            parsed.claims = claimsFromPayload(payload);
+            parsed.claims = claimsFromPayload(payload, prefix);
         } catch (Exception ex) {
             parsed.parseStatus = ParseStatus.TAMPERED;
             return parsed;
@@ -136,10 +147,24 @@ public with sharing class LicenseKeyService {
     }
 
     private static String canonical(Claims claims) {
-        return '1|' +
+        if (String.isBlank(claims.tierCode)) {
+            return '1|' +
+                claims.accountToken +
+                '|' +
+                claims.productCode +
+                '|' +
+                String.valueOf(claims.seatCount) +
+                '|' +
+                String.valueOf(claims.expiryDate) +
+                '|' +
+                claims.nonce;
+        }
+        return '2|' +
             claims.accountToken +
             '|' +
             claims.productCode +
+            '|' +
+            claims.tierCode +
             '|' +
             String.valueOf(claims.seatCount) +
             '|' +
@@ -148,20 +173,27 @@ public with sharing class LicenseKeyService {
             claims.nonce;
     }
 
-    private static Claims claimsFromPayload(String payload) {
+    private static Claims claimsFromPayload(String payload, String prefix) {
         List<String> fields = payload.split('\\|');
-        if (fields.size() != 6 || fields[0] != '1') {
+        Boolean versionTwo = prefix == KEY_PREFIX_V2;
+        if ((!versionTwo && (fields.size() != 6 || fields[0] != '1')) || (versionTwo && (fields.size() != 7 || fields[0] != '2'))) {
             throw new LicenseException('Unexpected license payload.');
         }
         Claims claims = new Claims();
         claims.accountToken = fields[1];
         claims.productCode = fields[2];
-        claims.seatCount = Integer.valueOf(fields[3]);
-        claims.expiryDate = Date.valueOf(fields[4]);
-        claims.nonce = fields[5];
+        Integer seatIndex = 3;
+        if (versionTwo) {
+            claims.tierCode = fields[3];
+            seatIndex = 4;
+        }
+        claims.seatCount = Integer.valueOf(fields[seatIndex]);
+        claims.expiryDate = Date.valueOf(fields[seatIndex + 1]);
+        claims.nonce = fields[seatIndex + 2];
         if (
             String.isBlank(claims.accountToken) ||
             String.isBlank(claims.productCode) ||
+            (versionTwo && String.isBlank(claims.tierCode)) ||
             String.isBlank(claims.nonce) ||
             claims.nonce.length() != 32
         ) {

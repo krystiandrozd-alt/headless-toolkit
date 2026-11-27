@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Idempotency_Key__c</fullName>
+    <caseSensitive>true</caseSensitive>
+    <description>License id, a colon, and the caller key. A repeat of the same key returns the original entry.</description>
+    <externalId>true</externalId>
+    <label>Idempotency Key</label>
+    <length>120</length>
+    <required>true</required>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

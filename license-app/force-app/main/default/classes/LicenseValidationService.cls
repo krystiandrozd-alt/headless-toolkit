@@ -15,6 +15,7 @@ public with sharing class LicenseValidationService {
     public static final String INVALID = 'INVALID';
     public static final String CLAIM_MISMATCH = 'CLAIM_MISMATCH';
     public static final String MISCONFIGURED = 'MISCONFIGURED';
+    public static final String DEPENDENCY_UNMET = 'DEPENDENCY_UNMET';
 
     public class CheckRequest {
         public String licenseKey;
@@ -34,6 +35,13 @@ public with sharing class LicenseValidationService {
         public Integer seatsInUse;
         public Integer seatsRemaining;
         public Date expiryDate;
+        public String tierCode;
+        public String keyVersion;
+        public Integer creditBalance;
+        public String features;
+        public String addOns;
+        public Boolean dependenciesMet;
+        public String unmetDependencies;
 
         public CheckResult mark(String statusValue, String messageValue) {
             this.status = statusValue;
@@ -105,6 +113,10 @@ public with sharing class LicenseValidationService {
                     Customer_Name__c,
                     Account_Token__c,
                     Product_Code__c,
+                    Tier_Code__c,
+                    Key_Version__c,
+                    Included_Features__c,
+                    Credit_Balance__c,
                     Seat_Count__c,
                     Seats_In_Use__c,
                     Expiry_Date__c,
@@ -155,6 +167,7 @@ public with sharing class LicenseValidationService {
                 continue;
             }
             fill(item.result, license, seatsInUse);
+            applySnapshot(item.result, license.Id);
             if (license.Status__c == 'Revoked') {
                 item.result.mark(REVOKED, 'This license has been revoked.');
                 continue;
@@ -183,7 +196,14 @@ public with sharing class LicenseValidationService {
                 continue;
             }
 
-            item.result.mark(VALID, validMessage(license, inUse));
+            if (item.result.dependenciesMet == false) {
+                item.result.mark(
+                    DEPENDENCY_UNMET,
+                    'License dependencies are not met: ' + item.result.unmetDependencies
+                );
+                continue;
+            }
+            item.result.mark(VALID, validMessage(license, inUse, item.result));
             if (item.consume && item.installationId != null && !knownInstallation) {
                 License_Activation__c activation = new License_Activation__c();
                 activation.License__c = license.Id;
@@ -197,7 +217,7 @@ public with sharing class LicenseValidationService {
                 license.Seats_In_Use__c = updated;
                 toUpdate.put(license.Id, license);
                 fill(item.result, license, seatsInUse);
-                item.result.mark(VALID, validMessage(license, updated));
+                item.result.mark(VALID, validMessage(license, updated, item.result));
             }
         }
 
@@ -247,6 +267,9 @@ public with sharing class LicenseValidationService {
 
     private static Boolean claimsMatch(LicenseKeyService.Claims claims, License__c license) {
         Integer seats = Integer.valueOf(license.Seat_Count__c);
+        if (String.isNotBlank(claims.tierCode) && claims.tierCode != license.Tier_Code__c) {
+            return false;
+        }
         return claims.accountToken == license.Account_Token__c &&
             claims.productCode == license.Product_Code__c &&
             claims.seatCount == seats &&
@@ -274,10 +297,22 @@ public with sharing class LicenseValidationService {
         result.expiryDate = license.Expiry_Date__c;
     }
 
-    private static String validMessage(License__c license, Integer inUse) {
+    private static void applySnapshot(CheckResult result, Id licenseId) {
+        LicenseCatalogService.EntitlementSnapshot snap = LicenseCatalogService.snapshot(licenseId);
+        result.tierCode = snap.tierCode;
+        result.keyVersion = snap.keyVersion;
+        result.creditBalance = snap.creditBalance;
+        result.features = snap.features;
+        result.addOns = snap.addOns;
+        result.dependenciesMet = snap.dependenciesMet;
+        result.unmetDependencies = snap.unmetDependencies;
+    }
+
+    private static String validMessage(License__c license, Integer inUse, CheckResult result) {
         Integer seats = Integer.valueOf(license.Seat_Count__c);
         Integer remaining = Math.max(0, seats - inUse);
-        return 'License is valid. ' +
+        String message =
+            'License is valid. ' +
             license.Customer_Name__c +
             ' / ' +
             license.Product_Code__c +
@@ -288,5 +323,18 @@ public with sharing class LicenseValidationService {
             ' seats remaining, expires ' +
             String.valueOf(license.Expiry_Date__c) +
             '.';
+        if (result != null && String.isNotBlank(result.tierCode)) {
+            message += ' Tier ' + result.tierCode + '.';
+        }
+        if (result != null && result.creditBalance != null) {
+            message += ' Credits ' + result.creditBalance + '.';
+        }
+        if (result != null && String.isNotBlank(result.features)) {
+            message += ' Features ' + result.features + '.';
+        }
+        if (result != null && String.isNotBlank(result.addOns)) {
+            message += ' Add-ons ' + result.addOns + '.';
+        }
+        return message;
     }
 }

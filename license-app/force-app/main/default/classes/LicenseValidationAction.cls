@@ -38,6 +38,24 @@ public with sharing class LicenseValidationAction {
 
         @InvocableVariable(label='Expiry Date' description='Expiry date, yyyy-MM-dd')
         public String expiryDate;
+
+        @InvocableVariable(label='Tier Code' description='Tier offering code when the license was issued from the catalog')
+        public String tierCode;
+
+        @InvocableVariable(label='Key Version' description='LIC1 or LIC2')
+        public String keyVersion;
+
+        @InvocableVariable(label='Credit Balance' description='Credits remaining')
+        public String creditBalance;
+
+        @InvocableVariable(label='Features' description='Semicolon-separated feature codes currently enabled')
+        public String features;
+
+        @InvocableVariable(label='Add Ons' description='Semicolon-separated active add-on codes')
+        public String addOns;
+
+        @InvocableVariable(label='Unmet Dependencies' description='Blank when dependencies are met')
+        public String unmetDependencies;
     }
 
     @InvocableMethod(
@@ -67,6 +85,12 @@ public with sharing class LicenseValidationAction {
             response.customerName = result.customerName;
             response.seatsRemaining = result.seatsRemaining == null ? null : String.valueOf(result.seatsRemaining);
             response.expiryDate = result.expiryDate == null ? null : String.valueOf(result.expiryDate);
+            response.tierCode = result.tierCode;
+            response.keyVersion = result.keyVersion;
+            response.creditBalance = result.creditBalance == null ? null : String.valueOf(result.creditBalance);
+            response.features = result.features;
+            response.addOns = result.addOns;
+            response.unmetDependencies = result.unmetDependencies;
             responses.add(response);
         }
         return responses;

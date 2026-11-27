@@ -66,6 +66,8 @@ public with sharing class LicenseLookupAction {
                 Name,
                 Customer_Name__c,
                 Product_Code__c,
+                Tier_Code__c,
+                Credit_Balance__c,
                 Seat_Count__c,
                 Seats_In_Use__c,
                 Expiry_Date__c,
@@ -99,7 +101,11 @@ public with sharing class LicenseLookupAction {
                     inUse +
                     ' of ' +
                     seats +
-                    ' seats used, expires ' +
+                    ' seats used, tier ' +
+                    (String.isBlank(license.Tier_Code__c) ? 'none' : license.Tier_Code__c) +
+                    ', credits ' +
+                    (license.Credit_Balance__c == null ? 0 : Integer.valueOf(license.Credit_Balance__c)) +
+                    ', expires ' +
                     String.valueOf(license.Expiry_Date__c) +
                     ', key ' +
                     LicenseAdminService.maskKey(license.License_Key__c)

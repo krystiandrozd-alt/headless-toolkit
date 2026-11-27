@@ -1,13 +1,19 @@
 # License Assistant
-# Validates a license key deterministically, and looks a license up from the conversation.
+# Router plus topics for validation, lookup, recommendations, dependencies, and credits.
+# Deterministic Apex calls use -> . Conversational instructions use | .
+# Branch with separate if blocks. Mutating tools require Manage License Changes and user confirmation.
+# Seat consumption stays off.
 
 config:
    developer_name: "License_Assistant"
    agent_label: "License Assistant"
    agent_type: "AgentforceEmployeeAgent"
-   description: "Validates product license keys and looks up licenses for an administrator."
+   description: "Validates licenses, explains tiers and add-ons, checks dependencies, and reports credit balances."
 
 variables:
+   caller_is_admin: mutable boolean = False
+      description: "True when the signed-in user has Manage License Changes"
+
    license_key: mutable string = ""
       description: "License key supplied by the user"
 
@@ -17,42 +23,69 @@ variables:
    lookup_customer: mutable string = ""
       description: "Customer name to search for"
 
+   product_code: mutable string = ""
+      description: "Product code used for tier and add-on recommendations"
+
+   current_tier: mutable string = ""
+      description: "Tier the customer has now"
+
+   target_tier: mutable string = ""
+      description: "Tier the customer is considering"
+
    validation_status: mutable string = ""
-      description: "Latest validation status returned by Apex"
+      description: "Latest status returned by Apex"
 
    validation_message: mutable string = ""
-      description: "Latest validation message returned by Apex"
+      description: "Latest message returned by Apex"
 
    lookup_summary: mutable string = ""
       description: "Latest license lookup summary"
 
+   recommendation_summary: mutable string = ""
+      description: "Tier, add-on, and upgrade explanation"
+
+   dependency_summary: mutable string = ""
+      description: "Unmet dependency text"
+
+   credit_summary: mutable string = ""
+      description: "Credit balance and usage text"
+
 system:
    messages:
-      welcome: "I can validate a license key or look up a license. What do you need?"
+      welcome: "I can validate a key, look up a license, explain tiers and add-ons, check dependencies, or read a credit balance."
       error: "I could not complete that license request. Check the key and try again."
-   instructions: "You are a license administrator. Be concise. Never invent a license status, expiry, or seat count. Report only what the license actions return."
+   instructions: "You are a license administrator. Be concise. Never invent a status, tier, feature, dependency, or credit balance. Report only what the license actions return. Do not consume a seat. Do not issue a license or change credits unless the user has confirmed and caller_is_admin is true."
 
 language:
    default_locale: "en_US"
 
 start_agent license_router:
-   description: "Route the user to license validation or license lookup"
+   description: "Route the user to the license topic they asked for"
    reasoning:
       instructions:->
          | Ask what they need when it is unclear.
-         | Send a request to check a license key to validation.
-         | Send a request to find a license by customer to lookup.
+         | Send a key check to validation.
+         | Send a customer or key search to lookup.
+         | Send a question about tiers, add-ons, or upgrades to recommendation.
+         | Send a question about required or excluded products to dependencies.
+         | Send a question about credits or usage to credits.
       actions:
          go_to_validate: @utils.transition to @subagent.license_validation
             description: "The user wants to validate a license key"
          go_to_lookup: @utils.transition to @subagent.license_lookup
             description: "The user wants to look up a license by customer or key"
+         go_to_recommend: @utils.transition to @subagent.license_recommendation
+            description: "The user wants a tier, add-on, or upgrade explanation"
+         go_to_dependencies: @utils.transition to @subagent.license_dependencies
+            description: "The user wants a dependency check"
+         go_to_credits: @utils.transition to @subagent.license_credits
+            description: "The user wants a credit balance or usage explanation"
 
 subagent license_validation:
-   description: "Validate a license key and explain the status"
+   description: "Validate a license key and explain the status, tier, features, and credits"
    actions:
       validate_license:
-         description: "Check the key signature, expiry, revocation, and remaining seats."
+         description: "Check the key signature, expiry, revocation, seats, dependencies, and entitlements."
          label: "Validate License"
          inputs:
             licenseKey: string
@@ -66,19 +99,21 @@ subagent license_validation:
                is_required: True
          outputs:
             status: string
-               description: "VALID, EXPIRED, REVOKED, TAMPERED, OVER_SEATS, NOT_FOUND, INVALID, CLAIM_MISMATCH, or MISCONFIGURED"
+               description: "VALID, EXPIRED, REVOKED, TAMPERED, OVER_SEATS, DEPENDENCY_UNMET, NOT_FOUND, INVALID, CLAIM_MISMATCH, or MISCONFIGURED"
             isValid: boolean
                description: "True only when the status is VALID"
             message: string
                description: "Plain-language result from Apex"
-            productCode: string
-               description: "Product code when the key matched a license"
-            customerName: string
-               description: "Customer name when the key matched a license"
-            seatsRemaining: string
-               description: "Seats still available"
-            expiryDate: string
-               description: "Expiry date, yyyy-MM-dd"
+            tierCode: string
+               description: "Tier code when the license was issued from the catalog"
+            features: string
+               description: "Enabled feature codes"
+            addOns: string
+               description: "Active add-on codes"
+            creditBalance: string
+               description: "Credits remaining"
+            unmetDependencies: string
+               description: "Unmet dependency text, or blank"
          target: "apex://LicenseValidationAction"
 
    reasoning:
@@ -94,7 +129,8 @@ subagent license_validation:
          | If you do not yet have the key, ask for it, then call {!@actions.validate_license_tool}.
          | Do not consume a seat.
          | When a result is present, explain {!@variables.validation_status} using only {!@variables.validation_message}.
-         | Do not invent a status. If the status is MISCONFIGURED, say the signing key is not set up.
+         | Mention the tier, features, add-ons, credits, and unmet dependencies when that message includes them.
+         | Do not invent a status.
       actions:
          capture_key: @utils.setVariables
             description: "Save the license key and optional installation id the user provides"
@@ -159,3 +195,251 @@ subagent license_lookup:
             with licenseKey=...
             set @variables.validation_status = @outputs.status
             set @variables.lookup_summary = @outputs.summary
+
+subagent license_recommendation:
+   description: "Recommend a tier or add-on and explain an upgrade"
+   actions:
+      check_admin:
+         description: "See whether the signed-in user may issue a license."
+         label: "Check License Admin"
+         inputs:
+            note: string
+               description: "Unused"
+               is_required: False
+         outputs:
+            isAdmin: boolean
+               description: "True when the user has Manage License Changes"
+         target: "apex://LicenseAdminGateAction"
+      describe_offerings:
+         description: "List tiers and add-ons, and compare two tiers."
+         label: "Describe License Offerings"
+         inputs:
+            productCode: string
+               description: "Product code, for example WidgetPro"
+               is_required: False
+            currentTier: string
+               description: "Current tier code"
+               is_required: False
+            targetTier: string
+               description: "Tier code being considered"
+               is_required: False
+         outputs:
+            summary: string
+               description: "Catalog text and upgrade comparison"
+         target: "apex://LicenseCatalogAction"
+      issue_license:
+         description: "Issue a tiered license. Admin only."
+         label: "Issue License"
+         require_user_confirmation: True
+         inputs:
+            customerName: string
+               description: "Customer name"
+               is_required: True
+            tierCode: string
+               description: "Tier offering code"
+               is_required: True
+            addOnCodes: string
+               description: "Semicolon-separated add-on codes"
+               is_required: False
+         outputs:
+            status: string
+               description: "ISSUED, NOT_AUTHORIZED, or INVALID"
+            message: string
+               description: "What was issued, or why it was refused"
+            licenseKey: string
+               description: "New key when the issue succeeded"
+         target: "apex://LicenseIssueAction"
+
+   reasoning:
+      instructions:->
+         run @actions.check_admin
+            with note=""
+            set @variables.caller_is_admin = @outputs.isAdmin
+         if @variables.product_code != "":
+            run @actions.describe_offerings
+               with productCode=@variables.product_code
+               with currentTier=@variables.current_tier
+               with targetTier=@variables.target_tier
+               set @variables.recommendation_summary = @outputs.summary
+         | Explain tiers and add-ons from {!@variables.recommendation_summary}.
+         | When the user names a current tier and a target tier, explain the upgrade using only that summary.
+         | If you do not yet know the product, ask for it, then call {!@actions.describe_offerings_tool}.
+         | Do not issue a license unless the user asks, confirms, and is allowed to.
+      actions:
+         capture_recommendation: @utils.setVariables
+            description: "Save the product and the tiers the user is comparing"
+            with product_code=...
+            with current_tier=...
+            with target_tier=...
+         describe_offerings_tool: @actions.describe_offerings
+            description: "Load tiers, add-ons, and an upgrade comparison"
+            with productCode=...
+            with currentTier=...
+            with targetTier=...
+            set @variables.recommendation_summary = @outputs.summary
+         issue_license_tool: @actions.issue_license
+            description: "Issue the license the user confirmed"
+            available when @variables.caller_is_admin == True
+            with customerName=...
+            with tierCode=...
+            with addOnCodes=...
+
+subagent license_dependencies:
+   description: "Check required and excluded products, tiers, and add-ons"
+   actions:
+      check_dependencies:
+         description: "Report unmet license dependencies."
+         label: "Check License Dependencies"
+         inputs:
+            licenseKey: string
+               description: "Full license key"
+               is_required: True
+         outputs:
+            status: string
+               description: "Validation status, including DEPENDENCY_UNMET"
+            summary: string
+               description: "Which dependencies failed, or that they are met"
+         target: "apex://LicenseDependencyAction"
+
+   reasoning:
+      instructions:->
+         if @variables.license_key != "":
+            run @actions.check_dependencies
+               with licenseKey=@variables.license_key
+               set @variables.validation_status = @outputs.status
+               set @variables.dependency_summary = @outputs.summary
+         | Explain the dependency result from {!@variables.dependency_summary}.
+         | If you do not yet have a key, ask for it, then call {!@actions.check_dependencies_tool}.
+         | Do not guess which product or tier is required.
+      actions:
+         capture_dependency_key: @utils.setVariables
+            description: "Save the license key to check"
+            with license_key=...
+         check_dependencies_tool: @actions.check_dependencies
+            description: "Check dependencies for the key the user provided"
+            with licenseKey=...
+            set @variables.validation_status = @outputs.status
+            set @variables.dependency_summary = @outputs.summary
+
+subagent license_credits:
+   description: "Read a credit balance and, for an administrator who confirms, consume or top up"
+   actions:
+      check_admin:
+         description: "See whether the signed-in user may change credits."
+         label: "Check License Admin"
+         inputs:
+            note: string
+               description: "Unused"
+               is_required: False
+         outputs:
+            isAdmin: boolean
+               description: "True when the user has Manage License Changes"
+         target: "apex://LicenseAdminGateAction"
+      read_balance:
+         description: "Read the credit balance for a license key."
+         label: "Read Credit Balance"
+         inputs:
+            operation: string
+               description: "Always balance for this action"
+               is_required: True
+            licenseKey: string
+               description: "Full license key"
+               is_required: True
+            amount: string
+               description: "Unused for a balance read"
+               is_required: False
+            idempotencyKey: string
+               description: "Unused for a balance read"
+               is_required: False
+            note: string
+               description: "Unused for a balance read"
+               is_required: False
+         outputs:
+            status: string
+               description: "License status"
+            message: string
+               description: "Balance and license message"
+            balance: string
+               description: "Credits remaining"
+            replayed: boolean
+               description: "False for a balance read"
+         target: "apex://LicenseCreditAction"
+      change_credits:
+         description: "Consume or top up credits. Admin only."
+         label: "Change Credits"
+         require_user_confirmation: True
+         inputs:
+            operation: string
+               description: "consume or topup"
+               is_required: True
+            licenseKey: string
+               description: "Full license key"
+               is_required: True
+            amount: string
+               description: "Positive whole number of credits"
+               is_required: True
+            idempotencyKey: string
+               description: "Caller key so a retry does not apply twice"
+               is_required: True
+            note: string
+               description: "Ledger note"
+               is_required: False
+         outputs:
+            status: string
+               description: "SUCCESS, INSUFFICIENT_CREDITS, IDEMPOTENT_REPLAY, IDEMPOTENCY_CONFLICT, or NOT_AUTHORIZED"
+            message: string
+               description: "What happened to the balance"
+            balance: string
+               description: "Balance after the change"
+            replayed: boolean
+               description: "True when this idempotency key was already used"
+         target: "apex://LicenseCreditAction"
+
+   reasoning:
+      instructions:->
+         run @actions.check_admin
+            with note=""
+            set @variables.caller_is_admin = @outputs.isAdmin
+         if @variables.license_key != "":
+            run @actions.read_balance
+               with operation="balance"
+               with licenseKey=@variables.license_key
+               with amount=""
+               with idempotencyKey=""
+               with note=""
+               set @variables.validation_status = @outputs.status
+               set @variables.credit_summary = @outputs.message
+         | Explain the credit balance and any usage note from {!@variables.credit_summary}.
+         | If you do not yet have a key, ask for it, then call {!@actions.read_balance_tool}.
+         | Do not consume or top up unless the user asks and confirms.
+         | A repeated idempotency key must not be described as a second charge.
+      actions:
+         capture_credit_key: @utils.setVariables
+            description: "Save the license key for a credit question"
+            with license_key=...
+         read_balance_tool: @actions.read_balance
+            description: "Read the balance for the key the user provided"
+            with operation="balance"
+            with licenseKey=...
+            with amount=""
+            with idempotencyKey=""
+            with note=""
+            set @variables.credit_summary = @outputs.message
+         consume_credits: @actions.change_credits
+            description: "Consume credits after the user confirms"
+            available when @variables.caller_is_admin == True
+            with operation="consume"
+            with licenseKey=...
+            with amount=...
+            with idempotencyKey=...
+            with note=...
+            set @variables.credit_summary = @outputs.message
+         top_up_credits: @actions.change_credits
+            description: "Top up credits after the user confirms"
+            available when @variables.caller_is_admin == True
+            with operation="topup"
+            with licenseKey=...
+            with amount=...
+            with idempotencyKey=...
+            with note=...
+            set @variables.credit_summary = @outputs.message

@@ -42,6 +42,103 @@ public with sharing class LicenseAdminController {
     }
 
     @AuraEnabled
+    public static List<LicenseCatalogService.OfferingView> listOfferings() {
+        try {
+            return LicenseCatalogService.listActive();
+        } catch (Exception ex) {
+            throw handled(ex);
+        }
+    }
+
+    @AuraEnabled
+    public static Integer installSampleCatalog() {
+        try {
+            return LicenseCatalogService.installSampleCatalog();
+        } catch (Exception ex) {
+            throw handled(ex);
+        }
+    }
+
+    @AuraEnabled
+    public static LicenseCatalogService.IssuePreview previewIssue(
+        String customerName,
+        String accountId,
+        String productCode,
+        String tierCode,
+        List<String> addOnCodes
+    ) {
+        try {
+            return LicenseCatalogService.preview(customerName, accountId, productCode, tierCode, addOnCodes);
+        } catch (Exception ex) {
+            throw handled(ex);
+        }
+    }
+
+    @AuraEnabled
+    public static LicenseAdminService.LicenseView createLicenseWithTier(
+        String customerName,
+        String accountId,
+        String tierCode,
+        Integer seatCount,
+        String expiryDate,
+        List<String> addOnCodes
+    ) {
+        try {
+            return LicenseAdminService.createWithTier(
+                customerName,
+                accountId,
+                tierCode,
+                seatCount,
+                String.isBlank(expiryDate) ? null : parseDate(expiryDate),
+                addOnCodes
+            );
+        } catch (Exception ex) {
+            throw handled(ex);
+        }
+    }
+
+    @AuraEnabled
+    public static LicenseAdminService.LicenseView attachAddOn(Id licenseId, String addOnCode) {
+        try {
+            return LicenseAdminService.attachAddOn(licenseId, addOnCode);
+        } catch (Exception ex) {
+            throw handled(ex);
+        }
+    }
+
+    @AuraEnabled
+    public static List<LicenseCatalogService.AddOnView> listAddOns(Id licenseId) {
+        try {
+            return LicenseCatalogService.listAddOns(licenseId);
+        } catch (Exception ex) {
+            throw handled(ex);
+        }
+    }
+
+    @AuraEnabled
+    public static LicenseCreditService.CreditResult topUpCredits(
+        Id licenseId,
+        Integer amount,
+        String idempotencyKey,
+        String note
+    ) {
+        try {
+            return LicenseCreditService.topUp(licenseId, amount, idempotencyKey, note);
+        } catch (Exception ex) {
+            throw handled(ex);
+        }
+    }
+
+    @AuraEnabled
+    public static List<LicenseCreditService.LedgerRow> listLedger(Id licenseId) {
+        try {
+            return LicenseCreditService.listEntries(licenseId);
+        } catch (Exception ex) {
+            throw handled(ex);
+        }
+    }
+
+    @AuraEnabled
     public static LicenseAdminService.LicenseView extendLicense(Id licenseId, String newExpiry) {
         try {
             return LicenseAdminService.extendLicense(licenseId, parseDate(newExpiry));

@@ -4,6 +4,12 @@
             <lightning-button label="Refresh" onclick={load} disabled={isSaving}></lightning-button>
             <lightning-button
                 class="slds-m-left_x-small"
+                label="Sample catalog"
+                onclick={loadSample}
+                disabled={isSaving}
+            ></lightning-button>
+            <lightning-button
+                class="slds-m-left_x-small"
                 label="New license"
                 variant="brand"
                 onclick={openCreate}
@@ -16,16 +22,16 @@
                 <lightning-spinner alternative-text="Loading licenses"></lightning-spinner>
             </template>
 
+            <template lwc:if={catalogEmpty}>
+                <p class="slds-m-bottom_small">No tiers yet. Sample catalog adds Starter, Pro, Enterprise, and the sample add-ons.</p>
+            </template>
+
             <template lwc:if={issuedKey}>
                 <div class="slds-scoped-notification slds-media slds-media_center slds-theme_success slds-m-bottom_medium" role="status">
                     <div class="slds-media__body">
                         <p class="slds-text-heading_small">New license key</p>
                         <p class="slds-m-top_x-small key-text">{issuedKey}</p>
-                        <lightning-button
-                            class="slds-m-top_x-small"
-                            label="Copy key"
-                            onclick={copyIssuedKey}
-                        ></lightning-button>
+                        <lightning-button class="slds-m-top_x-small" label="Copy key" onclick={copyIssuedKey}></lightning-button>
                     </div>
                 </div>
             </template>
@@ -33,12 +39,7 @@
             <template lwc:if={showCreate}>
                 <div class="slds-box slds-m-bottom_medium">
                     <h2 class="slds-text-heading_small slds-m-bottom_small">Create a license</h2>
-                    <lightning-input
-                        label="Customer name"
-                        value={customerName}
-                        required
-                        onchange={handleCustomerName}
-                    ></lightning-input>
+                    <lightning-input label="Customer name" value={customerName} onchange={handleCustomerName}></lightning-input>
                     <lightning-record-picker
                         class="slds-m-top_small"
                         label="Account"
@@ -50,10 +51,34 @@
                         class="slds-m-top_small"
                         label="Product code"
                         value={productCode}
-                        required
-                        field-level-help="1-40 characters: letters, numbers, dot, underscore, or hyphen."
+                        field-level-help="Leave this blank to take the product from the tier. Without a tier, this issues a LIC1 key."
                         onchange={handleProductCode}
                     ></lightning-input>
+                    <lightning-combobox
+                        class="slds-m-top_small"
+                        label="Tier"
+                        value={tierCode}
+                        options={tierOptions}
+                        placeholder="Optional tier"
+                        onchange={handleTierChange}
+                    ></lightning-combobox>
+                    <template lwc:if={hasAddOnChoices}>
+                        <lightning-checkbox-group
+                            class="slds-m-top_small"
+                            label="Add-ons"
+                            options={addOnOptions}
+                            value={selectedAddOns}
+                            onchange={handleAddOns}
+                        ></lightning-checkbox-group>
+                    </template>
+                    <template lwc:if={previewSummary}>
+                        <p class="slds-m-top_small">{previewSummary}</p>
+                    </template>
+                    <template lwc:if={previewWarnings}>
+                        <div class="slds-scoped-notification slds-media slds-media_center slds-theme_warning slds-m-top_small" role="status">
+                            <div class="slds-media__body">{previewWarnings}</div>
+                        </div>
+                    </template>
                     <lightning-input
                         class="slds-m-top_small"
                         type="number"
@@ -61,7 +86,6 @@
                         value={seatCount}
                         min="1"
                         max="100000"
-                        required
                         onchange={handleSeatCount}
                     ></lightning-input>
                     <lightning-input
@@ -70,18 +94,11 @@
                         label="Expiry"
                         value={expiryDate}
                         min={today}
-                        required
                         onchange={handleExpiryDate}
                     ></lightning-input>
                     <div class="slds-m-top_medium">
                         <lightning-button label="Cancel" onclick={cancelCreate} disabled={isSaving}></lightning-button>
-                        <lightning-button
-                            class="slds-m-left_x-small"
-                            label="Create"
-                            variant="brand"
-                            onclick={saveCreate}
-                            disabled={isSaving}
-                        ></lightning-button>
+                        <lightning-button class="slds-m-left_x-small" label="Create" variant="brand" onclick={saveCreate} disabled={isSaving}></lightning-button>
                     </div>
                 </div>
             </template>
@@ -89,25 +106,38 @@
             <template lwc:if={showExtend}>
                 <div class="slds-box slds-m-bottom_medium">
                     <h2 class="slds-text-heading_small slds-m-bottom_small">Extend license</h2>
-                    <p class="slds-m-bottom_small">Extending re-signs the key. The previous key will no longer validate.</p>
-                    <lightning-input
-                        type="date"
-                        label="New expiry"
-                        value={extendDate}
-                        min={today}
-                        required
-                        onchange={handleExtendDate}
-                    ></lightning-input>
+                    <p class="slds-m-bottom_small">Extending re-signs the key in the same version. It is refused while a dependency is unmet. The previous key will no longer validate.</p>
+                    <lightning-input type="date" label="New expiry" value={extendDate} min={today} required onchange={handleExtendDate}></lightning-input>
                     <div class="slds-m-top_medium">
                         <lightning-button label="Cancel" onclick={cancelExtend} disabled={isSaving}></lightning-button>
-                        <lightning-button
-                            class="slds-m-left_x-small"
-                            label="Extend"
-                            variant="brand"
-                            onclick={saveExtend}
-                            disabled={isSaving}
-                        ></lightning-button>
+                        <lightning-button class="slds-m-left_x-small" label="Extend" variant="brand" onclick={saveExtend} disabled={isSaving}></lightning-button>
                     </div>
+                </div>
+            </template>
+
+            <template lwc:if={showAddOn}>
+                <div class="slds-box slds-m-bottom_medium">
+                    <h2 class="slds-text-heading_small slds-m-bottom_small">Attach an add-on</h2>
+                    <lightning-combobox label="Add-on" value={addOnCode} options={addOnOptions} placeholder="Choose an add-on" onchange={handleAddOnCode}></lightning-combobox>
+                    <div class="slds-m-top_medium">
+                        <lightning-button label="Cancel" onclick={cancelAddOn} disabled={isSaving}></lightning-button>
+                        <lightning-button class="slds-m-left_x-small" label="Attach" variant="brand" onclick={saveAddOn} disabled={isSaving}></lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <template lwc:if={showCredits}>
+                <div class="slds-box slds-m-bottom_medium">
+                    <h2 class="slds-text-heading_small slds-m-bottom_small">Credits</h2>
+                    <p class="slds-m-bottom_small">{creditHeadline}</p>
+                    <lightning-input type="number" label="Top-up amount" value={topUpAmount} min="1" onchange={handleTopUpAmount}></lightning-input>
+                    <lightning-input class="slds-m-top_small" label="Note" value={topUpNote} onchange={handleTopUpNote}></lightning-input>
+                    <lightning-input class="slds-m-top_small" label="Idempotency key" value={topUpKey} onchange={handleTopUpKey}></lightning-input>
+                    <div class="slds-m-top_medium slds-m-bottom_medium">
+                        <lightning-button label="Close" onclick={cancelCredits} disabled={isSaving}></lightning-button>
+                        <lightning-button class="slds-m-left_x-small" label="Top up" variant="brand" onclick={saveTopUp} disabled={isSaving}></lightning-button>
+                    </div>
+                    <lightning-datatable key-field="entryId" data={ledger} columns={ledgerColumns} hide-checkbox-column></lightning-datatable>
                 </div>
             </template>
 
