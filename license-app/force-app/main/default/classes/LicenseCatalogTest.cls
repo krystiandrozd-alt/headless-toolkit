@@ -197,43 +197,74 @@ private class LicenseCatalogTest {
     }
 
     @IsTest
-    static void mutatingEntryPointsStayClosedWithoutTheCustomPermission() {
-        useTestKey();
-        seedPro();
-        LicenseAdminService.LicenseView created = LicenseAdminService.createWithTier(
-            'Locked Co',
-            null,
-            'WidgetPro-Pro',
-            null,
-            null,
-            null
+    static void mutatingEntryPointsFollowTheCustomPermission() {
+        User withoutPermission = standardUser();
+        User withPermission = standardUser();
+        insert new List<User>{ withoutPermission, withPermission };
+        insert new PermissionSetAssignment(
+            AssigneeId = withPermission.Id,
+            PermissionSetId = [SELECT Id FROM PermissionSet WHERE Name = 'License_Admin' LIMIT 1].Id
         );
 
-        LicenseCreditAction.Request consume = new LicenseCreditAction.Request();
-        consume.operation = 'consume';
-        consume.licenseKey = created.licenseKey;
-        consume.amount = '5';
-        consume.idempotencyKey = 'agent-1';
-        LicenseCreditAction.Response refused = LicenseCreditAction.execute(consume);
-        Assert.areEqual('NOT_AUTHORIZED', refused.status);
-        Assert.areEqual(1000, [SELECT Credit_Balance__c FROM License__c WHERE Id = :created.licenseId].Credit_Balance__c);
+        Id licenseId;
+        String licenseKey;
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            useTestKey();
+            seedPro();
+            LicenseAdminService.LicenseView created = LicenseAdminService.createWithTier(
+                'Locked Co',
+                null,
+                'WidgetPro-Pro',
+                null,
+                null,
+                null
+            );
+            licenseId = created.licenseId;
+            licenseKey = created.licenseKey;
+        }
 
-        LicenseIssueAction.Request issue = new LicenseIssueAction.Request();
-        issue.customerName = 'Someone';
-        issue.tierCode = 'WidgetPro-Pro';
-        Assert.areEqual('NOT_AUTHORIZED', LicenseIssueAction.issue(new List<LicenseIssueAction.Request>{ issue })[0].status);
+        System.runAs(withoutPermission) {
+            useTestKey();
+            LicenseCreditAction.Response refused = LicenseCreditAction.execute(consumeRequest(licenseKey, '5', 'agent-1'));
+            Assert.areEqual('NOT_AUTHORIZED', refused.status);
 
-        RestRequest request = new RestRequest();
-        request.requestUri = '/services/apexrest/license/v1/credits/consume';
-        request.httpMethod = 'POST';
-        request.requestBody = Blob.valueOf(
-            '{"licenseKey":"' + created.licenseKey + '","amount":5,"idempotencyKey":"rest-1"}'
-        );
-        RestContext.request = request;
-        RestContext.response = new RestResponse();
-        LicenseCreditRest.post();
-        Assert.areEqual(403, RestContext.response.statusCode);
-        Assert.areEqual(1000, [SELECT Credit_Balance__c FROM License__c WHERE Id = :created.licenseId].Credit_Balance__c);
+            LicenseIssueAction.Request issue = new LicenseIssueAction.Request();
+            issue.customerName = 'Someone';
+            issue.tierCode = 'WidgetPro-Pro';
+            Assert.areEqual(
+                'NOT_AUTHORIZED',
+                LicenseIssueAction.issue(new List<LicenseIssueAction.Request>{ issue })[0].status
+            );
+
+            RestRequest request = new RestRequest();
+            request.requestUri = '/services/apexrest/license/v1/credits/consume';
+            request.httpMethod = 'POST';
+            request.requestBody = Blob.valueOf(
+                '{"licenseKey":"' + licenseKey + '","amount":5,"idempotencyKey":"rest-1"}'
+            );
+            RestContext.request = request;
+            RestContext.response = new RestResponse();
+            LicenseCreditRest.post();
+            Assert.areEqual(403, RestContext.response.statusCode);
+        }
+        Assert.areEqual(1000, [SELECT Credit_Balance__c FROM License__c WHERE Id = :licenseId].Credit_Balance__c);
+
+        System.runAs(withPermission) {
+            useTestKey();
+            LicenseCreditAction.Response allowed = LicenseCreditAction.execute(consumeRequest(licenseKey, '5', 'allow-1'));
+            Assert.areEqual(LicenseCreditService.SUCCESS, allowed.status);
+            Assert.areEqual('995', allowed.balance);
+
+            LicenseIssueAction.Request issue = new LicenseIssueAction.Request();
+            issue.customerName = 'Issued Co';
+            issue.tierCode = 'WidgetPro-Pro';
+            LicenseIssueAction.Response issued = LicenseIssueAction.issue(
+                new List<LicenseIssueAction.Request>{ issue }
+            )[0];
+            Assert.areEqual('ISSUED', issued.status);
+            Assert.isTrue(issued.licenseKey.startsWith('LIC2.'));
+        }
+        Assert.areEqual(995, [SELECT Credit_Balance__c FROM License__c WHERE Id = :licenseId].Credit_Balance__c);
     }
 
     private static void seedPro() {
@@ -306,6 +337,33 @@ private class LicenseCatalogTest {
         );
         insert offering;
         return offering.Id;
+    }
+
+    private static Integer userSequence = 0;
+
+    private static User standardUser() {
+        userSequence++;
+        String token = String.valueOf(userSequence) + String.valueOf(Math.abs(Crypto.getRandomInteger()));
+        return new User(
+            Alias = ('lt' + userSequence).left(8),
+            Email = 'license.test.' + token + '@example.com',
+            EmailEncodingKey = 'UTF-8',
+            LastName = 'LicenseTest' + userSequence,
+            LanguageLocaleKey = 'en_US',
+            LocaleSidKey = 'en_US',
+            ProfileId = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1].Id,
+            TimeZoneSidKey = 'America/Los_Angeles',
+            Username = 'license.test.' + token + '@example.com'
+        );
+    }
+
+    private static LicenseCreditAction.Request consumeRequest(String licenseKey, String amount, String idempotencyKey) {
+        LicenseCreditAction.Request request = new LicenseCreditAction.Request();
+        request.operation = 'consume';
+        request.licenseKey = licenseKey;
+        request.amount = amount;
+        request.idempotencyKey = idempotencyKey;
+        return request;
     }
 
     private static String flipSignature(String licenseKey) {
